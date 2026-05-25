@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>급식 선호도 및 정보 대시보드</title>
+    <style>
+        /* 테마 변수 설정 */
+        :root {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --text-primary: #f0f0f0;
+            --text-secondary: #aaaaaa;
+            --border-default: #444444;
+            --border-green: #5cb85c;
+            --star-empty: #555555;
+            --star-filled: #d9534f;
+            --btn-bg: #2d2d2d;
+            --btn-text: #f0f0f0;
+            --btn-border: #555555;
+            --btn-hover: #444444;
+            --table-header-bg: #2d2d2d;
+            --table-border: #444444;
+            --photo-bg: #2d2d2d;
+            --calendar-hover: #333333;
+            --calendar-selected: #d9534f;
+            --today-highlight-bg: #3a3a3a; 
+            --panel-shadow: rgba(0, 0, 0, 0.5);
+            --tab-active-bg: #ff9f43;
+        }
+
+        body.light-mode {
+            --bg-color: #f5f7fa; 
+            --panel-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #888888;
+            --border-default: #cccccc;
+            --border-green: #5cb85c;
+            --star-empty: #cccccc;
+            --star-filled: #d9534f;
+            --btn-bg: #ffffff;
+            --btn-text: #555555;
+            --btn-border: #cccccc;
+            --btn-hover: #eeeeee;
+            --table-header-bg: #f2f2f2;
+            --table-border: #dddddd;
+            --photo-bg: #eeeeee;
+            --calendar-hover: #f0f0f0;
+            --calendar-selected: #d9534f;
+            --today-highlight-bg: #fdfae0; 
+            --panel-shadow: rgba(0, 0, 0, 0.08); 
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            height: 90vh;
+            gap: 25px; 
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: none; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px var(--panel-shadow); 
+            transition: background-color 0.3s, box-shadow 0.3s;
+            overflow-y: auto; 
+        }
+
+        /* 1. 왼쪽 패널 */
+        .left-panel { width: 280px; padding: 25px; display: flex; flex-direction: column; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 1.1rem; font-weight: bold; }
+        .calendar-nav-btn { background: none; border: none; color: var(--text-primary); font-size: 1.2rem; cursor: pointer; padding: 5px 10px; }
+        .calendar-nav-btn:hover { background-color: var(--btn-hover); border-radius: 5px; }
+        .calendar-table { width: 100%; border-collapse: collapse; text-align: center; }
+        .calendar-table th { padding: 10px 0; color: var(--text-secondary); font-size: 0.9rem; }
+        .calendar-table td { padding: 10px 0; border: 1px solid var(--table-border); cursor: pointer; border-radius: 4px; }
+        .calendar-table td:hover:not(:empty) { background-color: var(--calendar-hover); }
+
+        /* 2. 가운데 패널 (슬라이더 방지를 위해 여백 및 크기 축소, overflow 제한) */
+        .middle-panel { flex: 1.2; padding: 10px 15px; overflow: hidden; display: flex; flex-direction: column; }
+        .middle-panel-header { font-size: 1.2rem; color: var(--text-primary); border-bottom: 2px solid var(--table-border); padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; text-align: center; }
+        
+        /* 탭 버튼 스타일 (높이/마진 축소) */
+        .meal-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        .meal-tab-btn { padding: 6px 15px; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; background-color: var(--btn-bg); color: var(--btn-text); font-weight: bold; box-shadow: 0 2px 4px var(--panel-shadow); transition: 0.2s; }
+        .meal-tab-btn:hover { background-color: var(--btn-hover); }
+        .meal-tab-btn.active { background-color: var(--tab-active-bg); color: #fff; }
+
+        /* 사진 영역 (높이 축소) */
+        .meal-photo { width: 100%; height: 140px; margin-bottom: 10px; object-fit: contain; background-color: var(--panel-bg); border: 1px solid var(--table-border); border-radius: 8px; }
+
+        /* 3. 오른쪽 영역 */
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 25px; }
+        .button-group { display: flex; justify-content: flex-end; gap: 15px; }
+        .action-btn { padding: 0 15px; height: 40px; border: 1px solid var(--btn-border); background-color: var(--btn-bg); cursor: pointer; font-weight: bold; color: var(--btn-text); border-radius: 6px; box-shadow: 0 2px 5px var(--panel-shadow); transition: all 0.2s; }
+        .action-btn:hover { background-color: var(--btn-hover); transform: translateY(-1px); }
+
+        /* 표 공통 스타일 (패딩 축소로 행 높이 줄임) */
+        .meal-table { width: 100%; border-collapse: collapse; color: var(--text-primary); }
+        .meal-table th, .meal-table td { border: 1px solid var(--table-border); padding: 4px 8px; text-align: left; font-size: 0.85rem; }
+        .meal-table th { background-color: var(--table-header-bg); font-weight: bold; text-align: center; }
+
+        .today-meal-panel { flex: 1; padding: 25px; display: flex; flex-direction: column; }
+        .today-meal-header { font-size: 1.3rem; color: var(--text-primary); margin-top: 0; margin-bottom: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    
+    <aside class="panel left-panel">
+        <div class="calendar-header">
+            <button class="calendar-nav-btn" id="prevMonth">◀</button>
+            <span id="monthYearDisplay"></span>
+            <button class="calendar-nav-btn" id="nextMonth">▶</button>
+        </div>
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th style="color: #d9534f;">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th style="color: #5cb85c;">토</th>
+                </tr>
+            </thead>
+            <tbody id="calendarBody"></tbody>
+        </table>
+    </aside>
+
+    <section class="panel middle-panel">
+        <div class="middle-panel-header" id="selectedDateHeader">급식 정보</div>
+        
+        <div class="meal-tabs" id="mealTabs">
+            <button class="meal-tab-btn active" onclick="setMealType('조식')">조식</button>
+            <button class="meal-tab-btn" onclick="setMealType('중식')">중식</button>
+            <button class="meal-tab-btn" onclick="setMealType('석식')">석식</button>
+        </div>
+
+        <div style="position: relative; width: 100%; height: 140px; margin-bottom: 10px; background-color: var(--panel-bg); border: 1px solid var(--table-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <img class="meal-photo" style="margin:0; border:none; position: absolute; z-index: 2; display: none;">
+            <span id="no-photo-text" style="color: var(--text-secondary); font-size: 0.9rem; z-index: 1;">사진을 불러오는 중...</span>
+        </div>
+
+        <table class="meal-table">
+            <thead>
+                <tr>
+                    <th style="width: 45%;">반찬명</th>
+                    <th>선호도 (별점)</th>
+                </tr>
+            </thead>
+            <tbody id="dynamicMealBody">
+            </tbody>
+        </table>
+    </section>
+
+    <div class="right-panel">
+        <div class="button-group">
+            <button class="action-btn" id="themeToggleBtn">라이트 모드</button>
+            <button class="action-btn">급식 신청</button>
+            <button class="action-btn">의견 제출</button>
+        </div>
+
+        <section class="panel today-meal-panel">
+            <h2 class="today-meal-header">이번 주 급식 식단표 (인천전자마이스터고)</h2>
+            <table class="meal-table">
+                <thead>
+                    <tr>
+                        <th style="width: 20%; text-align: center;">요일</th>
+                        <th style="text-align: center;">식단 메뉴</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="meal-row-1"><td style="text-align: center;">월요일</td><td id="week-menu-1">불러오는 중...</td></tr>
+                    <tr id="meal-row-2"><td style="text-align: center;">화요일</td><td id="week-menu-2">불러오는 중...</td></tr>
+                    <tr id="meal-row-3"><td style="text-align: center;">수요일</td><td id="week-menu-3">불러오는 중...</td></tr>
+                    <tr id="meal-row-4"><td style="text-align: center;">목요일</td><td id="week-menu-4">불러오는 중...</td></tr>
+                    <tr id="meal-row-5"><td style="text-align: center;">금요일</td><td id="week-menu-5">불러오는 중...</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
+
+<script>
+    // 상태 관리 변수
+    let allMealData = {}; 
+    let currentViewDate = new Date(); // 실행 시점의 '오늘' 날짜가 자동으로 설정됩니다.
+    let currentMealType = "조식";    // 기본 선택 식사
+
+    // 1. 초기 데이터 불러오기
+    async function initDashboard() {
+        try {
+            const res = await fetch('src/Data/meal_data.json');
+            const data = await res.json();
+            if (data) {
+                allMealData = data; 
+                console.log("데이터 로드 완료");
+            }
+        } catch (e) {
+            console.warn("JSON 데이터를 찾을 수 없거나 로컬 환경이라 제한되었습니다.");
+        }
+        renderAll();
+    }
+
+    // 날짜별 데이터 가져오기
+    function getDayMeals(dateStr) {
+        return allMealData[dateStr] || []; 
+    }
+
+    // 2. 버튼 클릭 시 조식/중식/석식 변경
+    window.setMealType = function(type) {
+        currentMealType = type;
+        
+        // 버튼 색상 업데이트
+        const buttons = document.querySelectorAll('.meal-tab-btn');
+        buttons.forEach(btn => {
+            if (btn.innerText === type) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        renderDetailPanel(); // 화면 중앙 갱신
+    }
+
+    // 3. 전체 화면 갱신
+    function renderAll() {
+        const y = currentViewDate.getFullYear();
+        const m = currentViewDate.getMonth();
+        const d = currentViewDate.getDate();
+
+        updateCalendar(y, m, d);
+        renderDetailPanel();
+        updateWeeklyPanel(currentViewDate);
+    }
+
+    // 4. 상세 식단 표 업데이트 (가운데)
+    function renderDetailPanel() {
+        const y = currentViewDate.getFullYear();
+        // getMonth()는 0부터 시작하므로 +1 후, 두 자리가 아니면 앞에 0을 붙임
+        const m = String(currentViewDate.getMonth() + 1).padStart(2, '0');
+        const d = String(currentViewDate.getDate()).padStart(2, '0');
+        
+        const fileNameDate = `${y}_${m}_${d}`;
+        const dateStr = `${y}${m}${d}`;
+
+        document.getElementById('selectedDateHeader').innerText = `${y}년 ${m}월 ${d}일 급식 정보`;
+
+        const mealPhoto = document.querySelector('.meal-photo');
+        const noPhotoText = document.getElementById('no-photo-text');
+
+        mealPhoto.style.display = "none";
+        noPhotoText.style.display = "block";
+
+        const allMealsToday = getDayMeals(dateStr);
+        const targetMeal = allMealsToday.find(meal => meal.MMEAL_SC_NM === currentMealType);
+
+        if (targetMeal && targetMeal.IMG_PATH) {
+            noPhotoText.textContent = "사진을 불러오는 중...";
+            noPhotoText.style.display = "block";
+            mealPhoto.style.display = "none";
+
+            mealPhoto.src = targetMeal.IMG_PATH;
+            mealPhoto.onload = function() {
+                this.style.display = "block";
+                noPhotoText.style.display = "none";
+            };
+            mealPhoto.onerror = function() {
+                this.style.display = "none";
+                noPhotoText.textContent = "해당 급식의 사진을 찾을 수 없습니다.";
+                noPhotoText.style.display = "block";
+            };
+        } else {
+            mealPhoto.style.display = "none";
+            noPhotoText.textContent = "해당 급식의 사진을 찾을 수 없습니다.";
+            noPhotoText.style.display = "block";
+        }
+
+        mealPhoto.onload = function() {
+            this.style.display = "block";
+            noPhotoText.style.display = "none";
+        };
+
+        mealPhoto.onerror = function() {
+            this.style.display = "none";
+            noPhotoText.style.display = "block";
+        };
+
+        const mealBody = document.getElementById('dynamicMealBody');
+        mealBody.innerHTML = '';
+
+        if (targetMeal) {
+            // 패딩 최소화로 높이 축소
+            const typeRow = document.createElement('tr');
+            typeRow.innerHTML = `<td colspan="2" style="background: rgba(255,255,255,0.05); font-weight: bold; text-align: center; color: var(--tab-active-bg); padding: 4px;">[ ${currentMealType} ] <span style="font-size: 0.8em; color: var(--text-secondary); font-weight: normal;">(${targetMeal.CAL_INFO})</span></td>`;
+            mealBody.appendChild(typeRow);
+
+            // 메뉴 목록 및 별점 (여백 및 자간 압축)
+            targetMeal.DDISH_NM.forEach(menu => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding: 4px 8px; border-bottom: 1px solid var(--table-border); font-weight: 500;">${menu}</td>
+                    <td style="text-align: center; border-bottom: 1px solid var(--table-border);"><span style="color: #ffc107; font-size: 1.1rem; letter-spacing: -2px;">★★★★★</span></td>
+                `;
+                mealBody.appendChild(tr);
+            });
+        } else {
+            mealBody.innerHTML = `<tr><td colspan="2" style="padding: 20px; text-align: center; color: var(--text-secondary);">해당 날짜에 ${currentMealType} 데이터가 없습니다.</td></tr>`;
+        }
+    }
+
+    // 5. 달력 생성 및 업데이트 (왼쪽)
+    function updateCalendar(year, month, selectedDate) {
+        document.getElementById('monthYearDisplay').innerText = `${year}년 ${month + 1}월`;
+        
+        const calendarBody = document.getElementById('calendarBody'); 
+        calendarBody.innerHTML = ''; 
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        let tr = document.createElement('tr');
+        
+        for (let i = 0; i < firstDay; i++) {
+            tr.appendChild(document.createElement('td'));
+        }
+
+        for (let i = 1; i <= lastDate; i++) {
+            const td = document.createElement('td');
+            td.innerText = i;
+            
+            if (i === selectedDate) {
+                td.style.backgroundColor = 'var(--calendar-selected)'; 
+                td.style.color = '#fff';
+                td.style.fontWeight = 'bold';
+                td.style.borderRadius = '6px';
+            }
+
+            td.onclick = () => {
+                currentViewDate = new Date(year, month, i);
+                setMealType("조식"); 
+                renderAll(); 
+            };
+
+            tr.appendChild(td);
+
+            if ((firstDay + i) % 7 === 0) {
+                calendarBody.appendChild(tr);
+                tr = document.createElement('tr');
+            }
+        }
+        if (tr.children.length > 0) calendarBody.appendChild(tr);
+    }
+
+    // 6. 달력 화살표 이벤트 (이전/다음 달력 이동)
+    document.getElementById('prevMonth').addEventListener('click', () => {
+        currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+        renderAll();
+    });
+    
+    document.getElementById('nextMonth').addEventListener('click', () => {
+        currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+        renderAll();
+    });
+
+    // 7. 이번 주 식단표 (오른쪽)
+    function updateWeeklyPanel(baseDate) {
+        const start = new Date(baseDate);
+        const day = start.getDay();
+        const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+        start.setDate(diff);
+
+        for (let i = 1; i <= 5; i++) {
+            const d = new Date(start);
+            d.setDate(start.getDate() + (i - 1));
+            const dStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+            
+            const meals = getDayMeals(dStr);
+            const targetCell = document.getElementById(`week-menu-${i}`);
+            
+            if (targetCell) {
+                if (meals.length > 0) {
+                    const lunch = meals.find(m => m.MMEAL_SC_NM === "중식") || meals[0];
+                    targetCell.innerText = lunch.DDISH_NM.join(', '); 
+                } else {
+                    targetCell.innerText = "데이터 없음";
+                }
+            }
+        }
+    }
+
+    // 8. 테마 변경 (다크/라이트 모드) 기능 추가
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        if(document.body.classList.contains('light-mode')) {
+            themeToggleBtn.innerText = '다크 모드';
+        } else {
+            themeToggleBtn.innerText = '라이트 모드';
+        }
+    });
+
+    // 화면 초기 시작
+    initDashboard();
+</script>
+
+</body>
+</html>
