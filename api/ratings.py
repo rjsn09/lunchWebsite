@@ -14,8 +14,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_KEY = os.environ["SUPABASE_ANON_KEY"]
+# os.environ 대신 os.getenv를 사용하면 환경변수가 없을 때 프로그램이 바로 튕기는 것을 막아줍니다.
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 
 def sb_headers():
     return {
@@ -33,10 +34,9 @@ def cal_fin_score(rating_times, total_score):
     if decimal >= 0.75:
         return int(fin_score) + 1
     elif decimal >= 0.25:
-        return int(fin_score) + 0.5
+        return float(int(fin_score) + 0.5)
     else:
         return int(fin_score)
-
 
 @app.get("/api/ratings")
 async def get_ratings():
@@ -47,13 +47,16 @@ async def get_ratings():
             params={"select": "date,MMEAL_SC_NM,score,rating_times,total"},
         )
     res.raise_for_status()
+    
     result = {}
     for row in res.json():
-        result.setdefault(row["date"], {})[row["MMEAL_SC_NM"]] = [
-            row["score"], row["rating_times"], row["total"]
-        ]
+        if row["date"] not in result:
+            result[row["date"]] = {}
+            
+        # 🚨 중요: HTML 프론트엔드가 배열이 아닌 '숫자'를 기대하므로 score만 넘겨주도록 수정!
+        result[row["date"]][row["MMEAL_SC_NM"]] = row["score"]
+        
     return result
-
 
 class RatingPayload(BaseModel):
     date_str: str
@@ -78,7 +81,7 @@ async def post_rating(payload: RatingPayload):
         existing = rows[0] if rows else None
 
         rating_times = existing["rating_times"] if existing else 0
-        total        = existing["total"]         if existing else 0.0
+        total        = existing["total"]        if existing else 0.0
         new_times    = rating_times + 1
         new_total    = total + payload.score
         fin_score    = cal_fin_score(new_times, new_total)
@@ -107,6 +110,5 @@ async def post_rating(payload: RatingPayload):
         save_res.raise_for_status()
 
     return {"ok": True, "fin_score": fin_score, "rating_times": new_times, "total": new_total}
-
 
 handler = Mangum(app)

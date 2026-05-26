@@ -171,7 +171,6 @@
 </div>
 
 <script>
-    const API = "http://127.0.0.1:8000";
 
     let allMealData = {};
     let ratings     = {};   // { "20260507": { "조식": 4, "중식": 3 }, ... }
@@ -193,13 +192,13 @@
 
     async function loadRatings() {
         try {
-            const res = await fetch(`${API}/api/ratings`);
+            const res = await fetch(`/api/ratings`);
             if (res.ok) ratings = await res.json();
         } catch (e) { console.warn("ratings 로드 실패:", e); }
     }
 
     async function saveRating(dateStr, mealType, score) {
-        const res = await fetch(`${API}/api/ratings`, {
+        const res = await fetch(`/api/ratings`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ date_str: dateStr, meal_type: mealType, score })
