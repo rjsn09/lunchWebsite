@@ -419,7 +419,7 @@
         btn.innerText = "저장 중...";
     
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/ratings', {
+            const res = await fetch('/api/ratings', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
