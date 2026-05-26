@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>급식 선호도 및 정보 대시보드</title>
+    <style>
+        :root {
+            --bg-color: #121212; --panel-bg: #1e1e1e;
+            --text-primary: #f0f0f0; --text-secondary: #aaaaaa;
+            --star-empty: #555555; --star-filled: #ffc107; --star-hover: #fff9c4;
+            --btn-bg: #2d2d2d; --btn-text: #f0f0f0; --btn-border: #555555; --btn-hover: #444444;
+            --table-header-bg: #2d2d2d; --table-border: #444444;
+            --calendar-hover: #333333; --calendar-selected: #d9534f;
+            --panel-shadow: rgba(0,0,0,0.5); --tab-active-bg: #ff9f43;
+        }
+        body.light-mode {
+            --bg-color: #f5f7fa; --panel-bg: #ffffff;
+            --text-primary: #333333; --text-secondary: #888888;
+            --star-empty: #cccccc; --star-filled: #d9534f; --star-hover: #ffeaa7;
+            --btn-bg: #ffffff; --btn-text: #555555; --btn-border: #cccccc; --btn-hover: #eeeeee;
+            --table-header-bg: #f2f2f2; --table-border: #dddddd;
+            --calendar-hover: #f0f0f0; --calendar-selected: #d9534f;
+            --panel-shadow: rgba(0,0,0,0.08);
+        }
+        body { margin:0; padding:20px; font-family:'Malgun Gothic',sans-serif; background-color:var(--bg-color); color:var(--text-primary); box-sizing:border-box; display:flex; justify-content:center; align-items:center; height:100vh; transition:background-color 0.3s,color 0.3s; }
+        .dashboard-container { display:flex; width:100%; height:90vh; gap:25px; }
+        .panel { background-color:var(--panel-bg); border:none; border-radius:12px; box-shadow:0 4px 15px var(--panel-shadow); transition:background-color 0.3s,box-shadow 0.3s; overflow-y:auto; }
+        /* 달력 */
+        .left-panel { width:280px; padding:25px; display:flex; flex-direction:column; }
+        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:1.1rem; font-weight:bold; }
+        .calendar-nav-btn { background:none; border:none; color:var(--text-primary); font-size:1.2rem; cursor:pointer; padding:5px 10px; }
+        .calendar-nav-btn:hover { background-color:var(--btn-hover); border-radius:5px; }
+        .calendar-table { width:100%; border-collapse:collapse; text-align:center; }
+        .calendar-table th { padding:10px 0; color:var(--text-secondary); font-size:0.9rem; }
+        .calendar-table td { padding:10px 0; border:1px solid var(--table-border); cursor:pointer; border-radius:4px; }
+        .calendar-table td:hover:not(:empty) { background-color:var(--calendar-hover); }
+        /* 가운데 */
+        .middle-panel { flex:1.2; padding:10px 15px; overflow:hidden; display:flex; flex-direction:column; }
+        .middle-panel-header { font-size:1.2rem; color:var(--text-primary); border-bottom:2px solid var(--table-border); padding-bottom:8px; margin-bottom:10px; font-weight:bold; text-align:center; }
+        .meal-tabs { display:flex; justify-content:center; gap:8px; margin-bottom:10px; }
+        .meal-tab-btn { padding:6px 15px; font-size:0.85rem; border:none; border-radius:6px; cursor:pointer; background-color:var(--btn-bg); color:var(--btn-text); font-weight:bold; box-shadow:0 2px 4px var(--panel-shadow); transition:0.2s; }
+        .meal-tab-btn:hover { background-color:var(--btn-hover); }
+        .meal-tab-btn.active { background-color:var(--tab-active-bg); color:#fff; }
+        .meal-photo { width:100%; height:140px; object-fit:contain; background-color:var(--panel-bg); border:1px solid var(--table-border); border-radius:8px; }
+        /* 오른쪽 */
+        .right-panel { flex:2; display:flex; flex-direction:column; gap:25px; }
+        .button-group { display:flex; justify-content:flex-end; gap:15px; }
+        .action-btn { padding:0 15px; height:40px; border:1px solid var(--btn-border); background-color:var(--btn-bg); cursor:pointer; font-weight:bold; color:var(--btn-text); border-radius:6px; box-shadow:0 2px 5px var(--panel-shadow); transition:all 0.2s; }
+        .action-btn:hover { background-color:var(--btn-hover); transform:translateY(-1px); }
+        .meal-table { width:100%; border-collapse:collapse; color:var(--text-primary); }
+        .meal-table th,.meal-table td { border:1px solid var(--table-border); padding:4px 8px; text-align:left; font-size:0.85rem; vertical-align:top; }
+        .meal-table th { background-color:var(--table-header-bg); font-weight:bold; text-align:center; }
+        .today-meal-panel { flex:1; padding:25px; display:flex; flex-direction:column; overflow:hidden; }
+        .today-meal-header { font-size:1.3rem; color:var(--text-primary); margin-top:0; margin-bottom:20px; font-weight:bold; }
+        .weekly-table-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+        .weekly-table-wrap .meal-table { height:auto; table-layout:fixed; }
+        .weekly-table-wrap .meal-table tbody tr { height:60px; }
+        .weekly-table-wrap .meal-table tbody td { word-break:keep-all; white-space:normal; overflow:hidden; }
+        /* 별점 모달 */
+        #ratingOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; }
+        .rating-card { background:var(--panel-bg); border-radius:15px; padding:30px; text-align:center; min-width:300px; box-shadow:0 10px 40px rgba(0,0,0,0.5); position:relative; }
+        .rating-card h2 { margin:0 0 4px 0; font-size:1.1rem; color:var(--text-primary); }
+        .rating-subtitle { font-size:0.85rem; color:var(--text-secondary); margin-bottom:16px; }
+        .modal-close-btn { position:absolute; top:14px; right:16px; background:none; border:none; color:var(--text-secondary); font-size:1.4rem; cursor:pointer; }
+        .star-box { display:flex; justify-content:center; gap:2px; margin:16px 0 20px; }
+        .star-wrap { position:relative; width:2.8rem; height:2.8rem; font-size:2.8rem; line-height:1; cursor:pointer; display:inline-block; }
+        .star-wrap .star-bg   { color:var(--star-empty); }
+        .star-wrap .star-half { position:absolute; top:0; left:0; overflow:hidden; width:50%; color:var(--star-filled); transition:color 0.1s; }
+        .star-wrap .star-full { position:absolute; top:0; left:0; width:100%; color:var(--star-filled); transition:color 0.1s; }
+        .star-wrap .star-half, .star-wrap .star-full { opacity:0; }
+        .star-wrap.half-fill .star-half { opacity:1; }
+        .star-wrap.full-fill .star-full { opacity:1; }
+        .star-wrap.hover-half .star-half { opacity:1; color:var(--star-hover); }
+        .star-wrap.hover-full .star-full { opacity:1; color:var(--star-hover); }
+        .confirm-btn { width:100%; padding:12px; background:var(--tab-active-bg); border:none; border-radius:8px; color:#fff; font-weight:bold; font-size:1rem; cursor:pointer; }
+        .confirm-btn:disabled { opacity:0.5; cursor:not-allowed; }
+        /* 별점 표시 */
+        .star-display { font-size:1.3rem; letter-spacing:1px; display:inline-flex; align-items:center; gap:1px; }
+        .star-display .s-on  { color:var(--star-filled); }
+        .star-display .s-off { color:var(--star-empty); }
+        .star-display .s-half { position:relative; display:inline-block; }
+        .star-display .s-half .s-half-bg  { color:var(--star-empty); }
+        .star-display .s-half .s-half-fg  { position:absolute; top:0; left:0; overflow:hidden; width:50%; color:var(--star-filled); }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+
+    <!-- 왼쪽: 달력 -->
+    <aside class="panel left-panel">
+        <div class="calendar-header">
+            <button class="calendar-nav-btn" id="prevMonth">◀</button>
+            <span id="monthYearDisplay"></span>
+            <button class="calendar-nav-btn" id="nextMonth">▶</button>
+        </div>
+        <table class="calendar-table">
+            <thead>
+                <tr><th style="color:#d9534f;">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th style="color:#5cb85c;">토</th></tr>
+            </thead>
+            <tbody id="calendarBody"></tbody>
+        </table>
+    </aside>
+
+    <!-- 가운데: 급식 상세 -->
+    <section class="panel middle-panel">
+        <div class="middle-panel-header" id="selectedDateHeader">급식 정보</div>
+        <div class="meal-tabs" id="mealTabs">
+            <button class="meal-tab-btn active" onclick="setMealType('조식')">조식</button>
+            <button class="meal-tab-btn" onclick="setMealType('중식')">중식</button>
+            <button class="meal-tab-btn" onclick="setMealType('석식')">석식</button>
+        </div>
+        <div style="position:relative;width:100%;height:140px;margin-bottom:10px;background-color:var(--panel-bg);border:1px solid var(--table-border);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <img class="meal-photo" style="margin:0;border:none;position:absolute;z-index:2;display:none;">
+            <span id="no-photo-text" style="color:var(--text-secondary);font-size:0.9rem;z-index:1;">사진을 불러오는 중...</span>
+        </div>
+        <div style="flex:1;overflow-y:auto;">
+            <table class="meal-table">
+                <thead><tr><th style="width:100%;text-align:center;">반찬명</th></tr></thead>
+                <tbody id="dynamicMealBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 별점 모달 -->
+    <div id="ratingOverlay">
+        <div class="rating-card">
+            <button class="modal-close-btn" onclick="closeRatingPanel()">✕</button>
+            <h2 id="modalTitle">별점 남기기</h2>
+            <p class="rating-subtitle" id="modalSubtitle"></p>
+            <div class="star-box" id="starBox">
+                <span class="star-wrap" data-idx="1"><span class="star-bg">★</span><span class="star-half">★</span><span class="star-full">★</span></span>
+                <span class="star-wrap" data-idx="2"><span class="star-bg">★</span><span class="star-half">★</span><span class="star-full">★</span></span>
+                <span class="star-wrap" data-idx="3"><span class="star-bg">★</span><span class="star-half">★</span><span class="star-full">★</span></span>
+                <span class="star-wrap" data-idx="4"><span class="star-bg">★</span><span class="star-half">★</span><span class="star-full">★</span></span>
+                <span class="star-wrap" data-idx="5"><span class="star-bg">★</span><span class="star-half">★</span><span class="star-full">★</span></span>
+            </div>
+            <button class="confirm-btn" id="confirmBtn" onclick="confirmRating()">확인</button>
+        </div>
+    </div>
+
+    <!-- 오른쪽 -->
+    <div class="right-panel">
+        <div class="button-group">
+            <button class="action-btn" onclick="openRatingPanel()">별점 남기기</button>
+            <button class="action-btn">리뷰 남기기</button>
+            <button class="action-btn">급식 신청</button>
+            <button class="action-btn" id="themeToggleBtn">라이트 모드</button>
+        </div>
+        <section class="panel today-meal-panel">
+            <h2 class="today-meal-header">이번 주 급식 식단표 (인천전자마이스터고)</h2>
+            <div class="meal-tabs" style="justify-content:flex-start;margin-bottom:12px;">
+                <button class="meal-tab-btn active" id="weekly-tab-조식" onclick="setWeeklyMealType('조식')">조식</button>
+                <button class="meal-tab-btn" id="weekly-tab-중식" onclick="setWeeklyMealType('중식')">중식</button>
+                <button class="meal-tab-btn" id="weekly-tab-석식" onclick="setWeeklyMealType('석식')">석식</button>
+            </div>
+            <div class="weekly-table-wrap">
+                <table class="meal-table">
+                    <thead><tr><th style="width:20%;text-align:center;">요일</th><th style="text-align:center;">식단 메뉴</th></tr></thead>
+                    <tbody>
+                        <tr id="meal-row-1"><td style="text-align:center;">월요일</td><td id="week-menu-1">불러오는 중...</td></tr>
+                        <tr id="meal-row-2"><td style="text-align:center;">화요일</td><td id="week-menu-2">불러오는 중...</td></tr>
+                        <tr id="meal-row-3"><td style="text-align:center;">수요일</td><td id="week-menu-3">불러오는 중...</td></tr>
+                        <tr id="meal-row-4"><td style="text-align:center;">목요일</td><td id="week-menu-4">불러오는 중...</td></tr>
+                        <tr id="meal-row-5"><td style="text-align:center;">금요일</td><td id="week-menu-5">불러오는 중...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    const API = "http://127.0.0.1:8000";
+
+    let allMealData = {};
+    let ratings     = {};   // { "20260507": { "조식": 4, "중식": 3 }, ... }
+    let currentViewDate       = new Date();
+    let currentMealType       = "조식";
+    let currentWeeklyMealType = "조식";
+    let tempScore             = 0;
+
+    async function initDashboard() {
+        try {
+            const res = await fetch('src/Data/meal_data.json');
+            allMealData = await res.json();
+        } catch (e) { console.warn("meal_data.json 로드 실패:", e); }
+
+        await loadRatings();
+        initStarEvents();
+        renderAll();
+    }
+
+    async function loadRatings() {
+        try {
+            const res = await fetch(`${API}/api/ratings`);
+            if (res.ok) ratings = await res.json();
+        } catch (e) { console.warn("ratings 로드 실패:", e); }
+    }
+
+    async function saveRating(dateStr, mealType, score) {
+        const res = await fetch(`${API}/api/ratings`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ date_str: dateStr, meal_type: mealType, score })
+        });
+        if (!res.ok) throw new Error("저장 실패");
+    }
+
+    function getDayMeals(dateStr) { return allMealData[dateStr] || []; }
+
+    function getScore(dateStr, mealType) {
+        const data = ratings?.[dateStr]?.[mealType];
+        return Array.isArray(data) ? data[0] : 0; 
+    }
+
+    function makeStarHtml(score) {
+        if (!score) {
+            return `<span class="star-display">${'<span class="s-off">★</span>'.repeat(5)}</span>`;
+        }
+        let html = '<span class="star-display">';
+        for (let i = 1; i <= 5; i++) {
+            if (score >= i) {
+                html += '<span class="s-on">★</span>';
+            } else if (score >= i - 0.5) {
+                html += `<span class="s-half"><span class="s-half-bg">★</span><span class="s-half-fg">★</span></span>`;
+            } else {
+                html += '<span class="s-off">★</span>';
+            }
+        }
+        html += '</span>';
+        return html;
+    }
+
+    window.setMealType = function(type) {
+        currentMealType = type;
+        document.querySelectorAll('#mealTabs .meal-tab-btn').forEach(btn =>
+            btn.classList.toggle('active', btn.innerText === type)
+        );
+        renderDetailPanel();
+    }
+
+    window.setWeeklyMealType = function(type) {
+        currentWeeklyMealType = type;
+        ["조식","중식","석식"].forEach(t =>
+            document.getElementById(`weekly-tab-${t}`)?.classList.toggle('active', t === type)
+        );
+        updateWeeklyPanel(currentViewDate);
+    }
+
+    function renderAll() {
+        updateCalendar(currentViewDate.getFullYear(), currentViewDate.getMonth(), currentViewDate.getDate());
+        renderDetailPanel();
+        updateWeeklyPanel(currentViewDate);
+    }
+
+    function renderDetailPanel() {
+        const y = currentViewDate.getFullYear();
+        const m = String(currentViewDate.getMonth() + 1).padStart(2, '0');
+        const d = String(currentViewDate.getDate()).padStart(2, '0');
+        const dateStr = `${y}${m}${d}`;
+
+        document.getElementById('selectedDateHeader').innerText = `${y}년 ${m}월 ${d}일 급식 정보`;
+
+        const mealPhoto   = document.querySelector('.meal-photo');
+        const noPhotoText = document.getElementById('no-photo-text');
+        mealPhoto.style.display   = "none";
+        noPhotoText.style.display = "block";
+
+        const allMealsToday = getDayMeals(dateStr);
+        const targetMeal    = allMealsToday.find(m => m.MMEAL_SC_NM === currentMealType);
+
+        if (targetMeal?.IMG_PATH) {
+            noPhotoText.textContent = "사진을 불러오는 중...";
+            mealPhoto.src    = targetMeal.IMG_PATH;
+            mealPhoto.onload  = () => { mealPhoto.style.display = "block";  noPhotoText.style.display = "none"; };
+            mealPhoto.onerror = () => { mealPhoto.style.display = "none";   noPhotoText.textContent = "해당 급식의 사진을 찾을 수 없습니다."; };
+        } else {
+            noPhotoText.textContent = "해당 급식의 사진을 찾을 수 없습니다.";
+        }
+
+        const mealBody = document.getElementById('dynamicMealBody');
+        mealBody.innerHTML = '';
+
+        if (!targetMeal) {
+            mealBody.innerHTML = `<tr><td style="padding:20px;text-align:center;color:var(--text-secondary);">해당 날짜에 ${currentMealType} 데이터가 없습니다.</td></tr>`;
+            return;
+        }
+
+        const score = getScore(dateStr, currentMealType);
+        const starRow = document.createElement('tr');
+        starRow.innerHTML = `<td style="text-align:center;padding:8px;background:rgba(255,255,255,0.04);border-bottom:1px solid var(--table-border);">${makeStarHtml(score)}</td>`;
+        mealBody.appendChild(starRow);
+
+        const typeRow = document.createElement('tr');
+        typeRow.innerHTML = `<td style="background:rgba(255,255,255,0.05);font-weight:bold;text-align:center;color:var(--tab-active-bg);padding:6px;">[ ${currentMealType} ] <span style="font-size:0.8em;color:var(--text-secondary);font-weight:normal;">(${targetMeal.CAL_INFO})</span></td>`;
+        mealBody.appendChild(typeRow);
+
+        targetMeal.DDISH_NM.forEach(menu => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td style="padding:6px 8px;border-bottom:1px solid var(--table-border);text-align:center;">${menu}</td>`;
+            mealBody.appendChild(tr);
+        });
+    }
+
+    function updateCalendar(year, month, selectedDate) {
+        document.getElementById('monthYearDisplay').innerText = `${year}년 ${month + 1}월`;
+        const body = document.getElementById('calendarBody');
+        body.innerHTML = '';
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+        let tr = document.createElement('tr');
+
+        for (let i = 0; i < firstDay; i++) tr.appendChild(document.createElement('td'));
+        for (let i = 1; i <= lastDate; i++) {
+            const td = document.createElement('td');
+            td.innerText = i;
+            if (i === selectedDate) td.style.cssText = 'background-color:var(--calendar-selected);color:#fff;font-weight:bold;border-radius:6px;';
+            td.onclick = () => { currentViewDate = new Date(year, month, i); setMealType("조식"); renderAll(); };
+            tr.appendChild(td);
+            if ((firstDay + i) % 7 === 0) { body.appendChild(tr); tr = document.createElement('tr'); }
+        }
+        if (tr.children.length > 0) body.appendChild(tr);
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderAll(); });
+    document.getElementById('nextMonth').addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderAll(); });
+
+    function updateWeeklyPanel(baseDate) {
+        const start = new Date(baseDate);
+        const day = start.getDay();
+        start.setDate(start.getDate() - day + (day === 0 ? -6 : 1));
+        for (let i = 1; i <= 5; i++) {
+            const d = new Date(start);
+            d.setDate(start.getDate() + (i - 1));
+            const dStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+            const cell  = document.getElementById(`week-menu-${i}`);
+            if (!cell) continue;
+            const meals  = getDayMeals(dStr);
+            const target = meals.find(m => m.MMEAL_SC_NM === currentWeeklyMealType);
+            cell.innerText = target ? target.DDISH_NM.join(', ') : "데이터 없음";
+        }
+    }
+
+    function initStarEvents() {
+        const starBox = document.getElementById('starBox');
+        const wraps = [...document.querySelectorAll('.star-wrap')];
+
+        function getScoreFromEvent(e) {
+            // 각 별 wrap의 rect를 직접 사용해 정확하게 판단
+            for (let i = wraps.length - 1; i >= 0; i--) {
+                const rect = wraps[i].getBoundingClientRect();
+                if (e.clientX >= rect.left) {
+                    const x = e.clientX - rect.left;
+                    const idx = parseInt(wraps[i].dataset.idx);
+                    return x < rect.width / 2 ? idx - 0.5 : idx;
+                }
+            }
+            return 0.5;
+        }
+
+        wraps.forEach(wrap => {
+            wrap.addEventListener('mousemove', e => {
+                updateModalStarsHover(getScoreFromEvent(e));
+            });
+            wrap.addEventListener('click', e => {
+                tempScore = getScoreFromEvent(e);
+                updateModalStars(tempScore);
+            });
+        });
+
+        starBox.addEventListener('mouseleave', () => updateModalStars(tempScore));
+    }
+
+    function updateModalStarsHover(hv) {
+        document.querySelectorAll('.star-wrap').forEach(w => {
+            const idx = parseInt(w.dataset.idx);
+            w.classList.remove('half-fill','full-fill','hover-half','hover-full');
+            if (hv >= idx)           w.classList.add('hover-full');
+            else if (hv >= idx - 0.5) w.classList.add('hover-half');
+        });
+    }
+
+    function updateModalStars(score) {
+        document.querySelectorAll('.star-wrap').forEach(w => {
+            const idx = parseInt(w.dataset.idx);
+            w.classList.remove('half-fill','full-fill','hover-half','hover-full');
+            if (score >= idx)        w.classList.add('full-fill');
+            else if (score >= idx - 0.5) w.classList.add('half-fill');
+        });
+    }
+
+    function openRatingPanel() {
+        const y = currentViewDate.getFullYear();
+        const m = String(currentViewDate.getMonth() + 1).padStart(2, '0');
+        const d = String(currentViewDate.getDate()).padStart(2, '0');
+        const dateStr = `${y}${m}${d}`;
+
+        tempScore = getScore(dateStr, currentMealType);
+        updateModalStars(tempScore);
+
+        document.getElementById('modalTitle').innerText    = `${m}월 ${d}일 별점`;
+        document.getElementById('modalSubtitle').innerText = currentMealType;
+        document.getElementById('ratingOverlay').style.display = 'flex';
+    }
+
+    function closeRatingPanel() {
+        document.getElementById('ratingOverlay').style.display = 'none';
+    }
+
+    async function confirmRating() {
+        const y = currentViewDate.getFullYear();
+        const m = String(currentViewDate.getMonth() + 1).padStart(2, '0');
+        const d = String(currentViewDate.getDate()).padStart(2, '0');
+        const dateStr = `${y}${m}${d}`;
+    
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = true;
+        btn.innerText = "저장 중...";
+    
+        try {
+            const res = await fetch('http://127.0.0.1:8000/api/ratings', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    date_str: dateStr,
+                    meal_type: currentMealType,
+                    score: tempScore
+                })
+            });
+    
+            if (res.ok) {
+                alert("별점이 저장되었습니다!");
+                closeRatingPanel(); // 모달 닫기
+                renderDetailPanel(); // 화면 갱신
+            } else {
+                throw new Error();
+            }
+        } catch (e) {
+            alert("저장에 실패했습니다. 서버(8000포트)가 켜져 있는지 확인하세요.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "확인";
+        }
+    }
+
+    document.getElementById('ratingOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeRatingPanel();
+    });
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        document.getElementById('themeToggleBtn').innerText =
+            document.body.classList.contains('light-mode') ? '다크 모드' : '라이트 모드';
+    });
+
+    initDashboard();
+</script>
+</body>
+</html>
