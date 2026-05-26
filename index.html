@@ -171,16 +171,7 @@
 </div>
 
 <script>
-    const SUPABASE_URL = "postgresql://postgres:[Seed12240630!]@db.ziypqneblgpawofzphrj.supabase.co:5432/postgres";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppeXBxbmVibGdwYXdvZnpwaHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NzY3MjEsImV4cCI6MjA5NTM1MjcyMX0.s0tApBQ6qHtijMOJ5o-I15Xuba3UuGUrcVsEnbHu_gM";
-    const SB = (path, params = "") =>
-        `${SUPABASE_URL}/rest/v1/${path}${params ? "?" + params : ""}`;
-    const sbHeaders = (extra = {}) => ({
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json",
-        ...extra
-    });
+    const API = "http://127.0.0.1:8000";
 
     let allMealData = {};
     let ratings     = {};   // { "20260507": { "조식": 4, "중식": 3 }, ... }
@@ -200,71 +191,20 @@
         renderAll();
     }
 
-    function calFinScore(ratingTimes, totalScore) {
-        if (ratingTimes === 0) return 0;
-        const avg = Math.round(totalScore / ratingTimes * 10) / 10;
-        const decimal = avg - Math.floor(avg);
-        if (decimal >= 0.75) return Math.floor(avg) + 1;
-        if (decimal >= 0.25) return Math.floor(avg) + 0.5;
-        return Math.floor(avg);
-    }
-
     async function loadRatings() {
         try {
-            const res = await fetch(
-                SB("ratings", "select=date,MMEAL_SC_NM,score,rating_times,total"),
-                { headers: sbHeaders() }
-            );
-            if (!res.ok) throw new Error(await res.text());
-            const rows = await res.json();
-            ratings = {};
-            for (const row of rows) {
-                if (!ratings[row.date]) ratings[row.date] = {};
-                ratings[row.date][row.MMEAL_SC_NM] = [row.score, row.rating_times, row.total];
-            }
+            const res = await fetch(`${API}/api/ratings`);
+            if (res.ok) ratings = await res.json();
         } catch (e) { console.warn("ratings 로드 실패:", e); }
     }
 
     async function saveRating(dateStr, mealType, score) {
-        const getRes = await fetch(
-            SB("ratings", `select=id,rating_times,total&date=eq.${dateStr}&MMEAL_SC_NM=eq.${encodeURIComponent(mealType)}`),
-            { headers: sbHeaders() }
-        );
-        if (!getRes.ok) throw new Error("조회 실패");
-        const rows = await getRes.json();
-        const existing = rows[0] || null;
-
-        const ratingTimes = existing ? existing.rating_times : 0;
-        const total       = existing ? existing.total        : 0;
-        const newTimes    = ratingTimes + 1;
-        const newTotal    = total + score;
-        const finScore    = calFinScore(newTimes, newTotal);
-
-        const body = JSON.stringify({
-            date: dateStr,
-            MMEAL_SC_NM: mealType,
-            score: finScore,
-            rating_times: newTimes,
-            total: newTotal,
+        const res = await fetch(`${API}/api/ratings`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ date_str: dateStr, meal_type: mealType, score })
         });
-
-        let saveRes;
-        if (existing) {
-            saveRes = await fetch(
-                SB("ratings", `id=eq.${existing.id}`),
-                { method: "PATCH", headers: sbHeaders({ "Prefer": "return=minimal" }), body }
-            );
-        } else {
-            saveRes = await fetch(
-                SB("ratings"),
-                { method: "POST", headers: sbHeaders({ "Prefer": "return=minimal" }), body }
-            );
-        }
-        if (!saveRes.ok) throw new Error("저장 실패: " + await saveRes.text());
-
-        // 로컬 캐시 업데이트
-        if (!ratings[dateStr]) ratings[dateStr] = {};
-        ratings[dateStr][mealType] = [finScore, newTimes, newTotal];
+        if (!res.ok) throw new Error("저장 실패");
     }
 
     function getDayMeals(dateStr) { return allMealData[dateStr] || []; }
@@ -479,7 +419,7 @@
         btn.innerText = "저장 중...";
     
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/ratings', {
+            const res = await fetch('/api/ratings', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

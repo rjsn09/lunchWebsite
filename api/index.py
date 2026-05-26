@@ -1,15 +1,11 @@
-import json
 import os
-import uvicorn
+import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 app = FastAPI()
 
-# CORS 설정
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,21 +13,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-RATINGS_PATH = "src/Data/ratings.json"
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_KEY = os.environ["SUPABASE_ANON_KEY"]
 
-def read_ratings() -> dict:
-    if not os.path.exists(RATINGS_PATH):
-        return {}
-    try:
-        with open(RATINGS_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return {}
-
-def write_ratings(data: dict):
-    os.makedirs(os.path.dirname(RATINGS_PATH), exist_ok=True)
-    with open(RATINGS_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+def sb_headers():
+    return {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation",
+    }
 
 def cal_fin_score(rating_times, total_score):
     if rating_times == 0:
@@ -45,10 +36,23 @@ def cal_fin_score(rating_times, total_score):
     else:
         return int(fin_score)
 
-# ── API ──
+
 @app.get("/api/ratings")
-def get_ratings():
-    return read_ratings()
+async def get_ratings():
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/ratings",
+            headers=sb_headers(),
+            params={"select": "date,MMEAL_SC_NM,score,rating_times,total"},
+        )
+    res.raise_for_status()
+    result = {}
+    for row in res.json():
+        result.setdefault(row["date"], {})[row["MMEAL_SC_NM"]] = [
+            row["score"], row["rating_times"], row["total"]
+        ]
+    return result
+
 
 class RatingPayload(BaseModel):
     date_str: str
@@ -56,30 +60,49 @@ class RatingPayload(BaseModel):
     score: float
 
 @app.post("/api/ratings")
-def post_rating(payload: RatingPayload):
-    data = read_ratings()
-    current_data = data.get(payload.date_str, {})
-    meal_data = current_data.get(payload.meal_type, [0, 0, 0])
-    cur_score, rating_times, total = meal_data if len(meal_data) == 3 else [0, 0, 0]
+async def post_rating(payload: RatingPayload):
+    async with httpx.AsyncClient() as client:
+        # 기존 행 조회
+        get_res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/ratings",
+            headers=sb_headers(),
+            params={
+                "select": "id,rating_times,total",
+                "date": f"eq.{payload.date_str}",
+                "MMEAL_SC_NM": f"eq.{payload.meal_type}",
+            },
+        )
+        get_res.raise_for_status()
+        rows = get_res.json()
+        existing = rows[0] if rows else None
 
-    new_total = total + payload.score
-    new_times = rating_times + 1
-    fin_score = cal_fin_score(new_times, new_total)
+        rating_times = existing["rating_times"] if existing else 0
+        total        = existing["total"]         if existing else 0.0
+        new_times    = rating_times + 1
+        new_total    = total + payload.score
+        fin_score    = cal_fin_score(new_times, new_total)
 
-    if payload.date_str not in data:
-        data[payload.date_str] = {}
-    data[payload.date_str][payload.meal_type] = [fin_score, new_times, new_total]
-    write_ratings(data)
-    return {"ok": True}
+        body = {
+            "date": payload.date_str,
+            "MMEAL_SC_NM": payload.meal_type,
+            "score": fin_score,
+            "rating_times": new_times,
+            "total": new_total,
+        }
 
-# ── 정적 파일 설정 ──
-if os.path.exists("src"):
-    app.mount("/src", StaticFiles(directory="src"), name="src")
+        if existing:
+            save_res = await client.patch(
+                f"{SUPABASE_URL}/rest/v1/ratings",
+                headers=sb_headers(),
+                params={"id": f"eq.{existing['id']}"},
+                json=body,
+            )
+        else:
+            save_res = await client.post(
+                f"{SUPABASE_URL}/rest/v1/ratings",
+                headers=sb_headers(),
+                json=body,
+            )
+        save_res.raise_for_status()
 
-@app.get("/")
-def root():
-    return FileResponse("index.html")
-
-if __name__ == "__main__":
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=True)
-    # uvicorn server:app
+    return {"ok": True, "fin_score": fin_score, "rating_times": new_times, "total": new_total}
