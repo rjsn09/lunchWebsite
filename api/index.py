@@ -3,6 +3,7 @@ import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from mangum import Mangum
 
 app = FastAPI()
 
@@ -106,3 +107,6 @@ async def post_rating(payload: RatingPayload):
         save_res.raise_for_status()
 
     return {"ok": True, "fin_score": fin_score, "rating_times": new_times, "total": new_total}
+
+
+handler = Mangum(app)
