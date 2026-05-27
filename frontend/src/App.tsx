@@ -186,7 +186,7 @@ export default function App() {
         onClick={(e) => { if (e.target === e.currentTarget) setNotSupportedOpen(false); }}
       >
         <div className="not-supported-card">
-          <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
+          <p>아직 서비스되지 않는 기능입니다.</p>
           <button onClick={() => setNotSupportedOpen(false)}>확인</button>
         </div>
       </div>
