@@ -85,18 +85,21 @@
         /* --- 리뷰 슬라이드 패널 스타일 --- */
         .right-panel { flex: 2; display: flex; flex-direction: column; gap: 25px; position: relative; overflow: hidden; padding-bottom: 45px; }
         .review-slide-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
-        .review-trigger { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); pointer-events: auto; background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s; }
+        .review-trigger { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); pointer-events: auto; background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s, bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 52; }
         .review-trigger:hover { background: var(--btn-hover); }
-        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: calc(100% - 65px); background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: calc(100% - 65px); background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 51; }
         .review-panel.open { transform: translateY(0); }
         .review-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--table-border); background: var(--table-header-bg); }
         .review-header h3 { margin: 0; font-size: 1.1rem; }
-        .review-close { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; font-weight: bold; }
         .review-content { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .review-item { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--table-border); font-size: 0.9rem; line-height: 1.4; }
         .review-input-box { display: flex; padding: 15px; border-top: 1px solid var(--table-border); gap: 10px; background: var(--panel-bg); }
         .review-input-box input { flex: 1; padding: 10px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--bg-color); color: var(--text-primary); outline: none; }
         .review-input-box button { padding: 0 20px; background: var(--tab-active-bg); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        .not-supported-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; }
+        .not-supported-card { background: var(--panel-bg); border-radius: 12px; padding: 30px; text-align: center; border: 1px solid var(--table-border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); min-width: 280px; }
+        .not-supported-card p { margin: 0 0 20px 0; font-size: 1.05rem; font-weight: bold; color: var(--text-primary); }
+        .not-supported-card button { background: var(--tab-active-bg); border: none; border-radius: 6px; color: white; padding: 8px 24px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -158,7 +161,7 @@
     <div class="right-panel">
         <div class="button-group">
             <button class="action-btn" onclick="openRatingPanel()">별점 남기기</button>
-            <button class="action-btn">급식 신청</button>
+            <button class="action-btn" onclick="openNotSupportedPanel()">급식 신청</button>
             <button class="action-btn" id="themeToggleBtn">라이트 모드</button>
         </div>
         <section class="panel today-meal-panel">
@@ -181,22 +184,20 @@
                 </table>
             </div>
         </section>
-        <div class="review-slide-container">
-            <button class="review-trigger" onclick="toggleReview()">💬 리뷰 보기 및 작성</button>
-            <div class="review-panel" id="reviewPanel">
-                <div class="review-header">
-                    <h3>오늘의 급식 리뷰 (<span id="reviewMealType">조식</span>)</h3>
-                    <button class="review-close" onclick="toggleReview()">▼ 닫기</button>
-                </div>
-                
-                <div class="review-content" id="reviewList">
-                    <div class="review-item">오늘 고기반찬 폼 미쳤다... 👍</div>
-                    <div class="review-item">국이 조금 짰어요 ㅠㅠ</div>
-                </div>
-                
-                <div class="review-input-box">
-                    <input type="text" id="reviewInput" placeholder="바르고 고운 말로 리뷰를 남겨주세요..." onkeypress="if(event.key==='Enter') submitReview()">
-                    <button onclick="submitReview()">등록</button>
+            <div class="review-slide-container">
+                <button class="review-trigger" id="reviewTriggerBtn" onclick="toggleReview()">💬 리뷰 보기 및 작성</button>
+                <div class="review-panel" id="reviewPanel">
+                    <div class="review-header">
+                        <h3>오늘의 급식 리뷰 (<span id="reviewMealType">조식</span>)</h3>
+                    </div>
+                    <div class="review-content" id="reviewList">
+                        <div class="review-item">오늘 고기반찬 폼 미쳤다... 👍</div>
+                        <div class="review-item">국이 조금 짰어요 ㅠㅠ</div>
+                    </div>
+                    <div class="review-input-box">
+                        <input type="text" id="reviewInput" placeholder="바르고 고운 말로 리뷰를 남겨주세요..." onkeypress="if(event.key==='Enter') submitReview()">
+                        <button onclick="submitReview()">등록</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -506,8 +507,16 @@
 
     function toggleReview() {
         const panel = document.getElementById('reviewPanel');
+        const trigger = document.getElementById('reviewTriggerBtn');
         document.getElementById('reviewMealType').innerText = currentMealType;
+        
         panel.classList.toggle('open');
+        
+        if (panel.classList.contains('open')) {
+            trigger.style.bottom = "calc(100% - 65px)";
+        } else {
+            trigger.style.bottom = "0";
+        }
     }
 
     function submitReview() {
@@ -535,6 +544,14 @@
         reviewList.scrollTop = 0;
     }
 
+    function openNotSupportedPanel() {
+        document.getElementById('notSupportedOverlay').style.display = 'flex';
+    }
+
+    function closeNotSupportedPanel() {
+        document.getElementById('notSupportedOverlay').style.display = 'none';
+    }
+
     document.getElementById('ratingOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeRatingPanel();
     });
@@ -547,5 +564,11 @@
 
     initDashboard();
 </script>
+<div class="not-supported-overlay" id="notSupportedOverlay" onclick="if(event.target===this) closeNotSupportedPanel()">
+    <div class="not-supported-card">
+        <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
+        <button onclick="closeNotSupportedPanel()">확인</button>
+    </div>
+</div>
 </body>
 </html>
