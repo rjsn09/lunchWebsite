@@ -124,19 +124,18 @@ export default function App() {
         {/* 오른쪽 패널 */}
         <div className="right-panel">
           <div className="button-group">
+            <button
+              onClick={() => setIsLightMode(!isLightMode)}
+              title="테마 변경"
+              className="flex items-center justify-center p-2 text-gray-400 transition-all duration-200 hover:text-white hover:scale-110 active:scale-95"
+            >
+              {isLightMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <button className="action-btn" onClick={() => setRatingOpen(true)}>
               별점 남기기
             </button>
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               급식 신청
-            </button>
-            {/* 원본과 동일하게 innerHTML로 SVG 삽입 */}
-            <button
-              onClick={() => setIsLightMode(!isLightMode)}
-              title="테마 변경"
-              className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-200"
-            >
-              {isLightMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               로그인
