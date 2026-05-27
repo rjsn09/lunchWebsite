@@ -7,6 +7,7 @@ import ReviewPanel from "./components/ReviewPanel";
 import { useToast } from "./components/useToast";
 import { fetchMeals, fetchRatings, postRating } from "./api";
 import type { MealData, MealType, RatingsData } from "./types";
+import { Sun, Moon } from 'lucide-react';
 
 // 원본 HTML의 SVG 상수 그대로
 const MOON_SVG = `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`;
@@ -131,11 +132,11 @@ export default function App() {
             </button>
             {/* 원본과 동일하게 innerHTML로 SVG 삽입 */}
             <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={() => setIsLightMode(!isLightMode)}
               title="테마 변경"
               className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              {isLightMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               로그인
