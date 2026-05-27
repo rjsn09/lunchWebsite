@@ -2,6 +2,7 @@ import os
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Response
 from pydantic import BaseModel
 import asyncio
 
@@ -46,7 +47,7 @@ async def get_ratings():
         return result
 
 @app.get("/api/meals")
-async def get_meals():
+async def get_meals(response: Response):
     async with httpx.AsyncClient() as client:
         meal_task = client.get(f"{SUPABASE_URL}/rest/v1/meal_data", headers=get_sb_headers())
         dish_task = client.get(f"{SUPABASE_URL}/rest/v1/DDISH_NM", headers=get_sb_headers())
@@ -77,7 +78,7 @@ async def get_meals():
                 "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get('CAL_INFO') else None,
                 "IMG_PATH": m.get("IMG_PATH")
             })
-            
+        response.headers["Cache-Control"] = "public, s-maxage=3600, stale-while-revalidate=60"
         return result
 
 class RatingPayload(BaseModel):
