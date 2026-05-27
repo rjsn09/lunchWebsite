@@ -6,18 +6,21 @@
       "use": "@vercel/python"
     },
     {
-      "src": "index.html",
-      "use": "@vercel/static"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "public"
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.py"
+      "dest": "api/index.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/public/$1"
     }
   ]
 }
