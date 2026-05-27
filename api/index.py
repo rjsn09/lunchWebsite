@@ -1,24 +1,12 @@
-"""
-인마고 급식 게시판 - FastAPI 백엔드
-Vercel Serverless Functions 배포용 (api/index.py)
-"""
-
-from __future__ import annotations
-
-import json
 import os
-from datetime import date, timedelta
-from pathlib import Path
-from typing import Any
-
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi import Response
 from pydantic import BaseModel
+import asyncio
 
-# ── 앱 초기화 ──────────────────────────────────────────────
-app = FastAPI(title="인마고 급식 API", version="1.0.0")
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,141 +15,128 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── 상수 ───────────────────────────────────────────────────
-NEIS_API_KEY = os.getenv("NEIS_API_KEY", "")
-SCHOOL_CODE = "J100005318"       # 인천전자마이스터고
-OFFICE_CODE = "J10"              # 인천광역시교육청
-NEIS_URL    = "https://open.neis.go.kr/hub/mealServiceDietInfo"
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "").strip()
 
-MEAL_TYPE_MAP = {"1": "조식", "2": "중식", "3": "석식"}
-
-# 별점 인메모리 저장소 (실제 운영시 DB로 교체)
-# 구조: { "20260507": { "조식": {"total": 4.5, "count": 2} } }
-_ratings_store: dict[str, dict[str, dict[str, float]]] = {}
-
-# ── 유틸 ───────────────────────────────────────────────────
-
-def _get_week_range(base: date) -> tuple[str, str]:
-    """기준 날짜가 속한 주의 월~금 범위 반환 (YYYYMMDD 문자열)"""
-    weekday = base.weekday()
-    monday  = base - timedelta(days=weekday)
-    friday  = monday + timedelta(days=4)
-    return monday.strftime("%Y%m%d"), friday.strftime("%Y%m%d")
-
-
-def _parse_dish_name(raw: str) -> list[str]:
-    """DDISH_NM 문자열을 <br/> 또는 줄바꿈으로 분리하여 리스트 반환"""
-    import re
-    items = re.split(r"<br\s*/?>|\n", raw)
-    return [i.strip() for i in items if i.strip()]
-
-
-async def _fetch_neis_meals(from_date: str, to_date: str) -> list[dict[str, Any]]:
-    """NEIS API 호출 — 날짜 범위의 식단 데이터를 반환"""
-    params = {
-        "KEY":        NEIS_API_KEY,
-        "Type":       "json",
-        "pIndex":     "1",
-        "pSize":      "100",
-        "ATPT_OFCDC_SC_CODE": OFFICE_CODE,
-        "SD_SCHUL_CODE":      SCHOOL_CODE,
-        "MLSV_FROM_YMD":      from_date,
-        "MLSV_TO_YMD":        to_date,
+def get_sb_headers():
+    return {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json",
     }
-    async with httpx.AsyncClient(timeout=10) as client:
-        resp = await client.get(NEIS_URL, params=params)
-        resp.raise_for_status()
-        data = resp.json()
-
-    rows: list[dict[str, Any]] = []
-    try:
-        rows = data["mealServiceDietInfo"][1]["row"]
-    except (KeyError, IndexError, TypeError):
-        pass
-    return rows
-
-
-def _rows_to_meal_data(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    """NEIS 행 목록을 { "YYYYMMDD": [meal, ...] } 형태로 변환"""
-    result: dict[str, list[dict[str, Any]]] = {}
-    for row in rows:
-        date_key  = row.get("MLSV_YMD", "")
-        meal_code = row.get("MMEAL_SC_CODE", "")
-        meal_name = MEAL_TYPE_MAP.get(meal_code, meal_code)
-        entry = {
-            "MMEAL_SC_NM": meal_name,
-            "DDISH_NM":    _parse_dish_name(row.get("DDISH_NM", "")),
-            "CAL_INFO":    row.get("CAL_INFO", ""),
-            "IMG_PATH":    row.get("ORPLC_INFO", ""),   # 식재료 원산지 (사진 없음)
-        }
-        result.setdefault(date_key, []).append(entry)
-    return result
-
-
-# ── 라우터 ─────────────────────────────────────────────────
-
-@app.get("/api/meals")
-async def get_meals() -> JSONResponse:
-    """
-    이번 주 (±2주) 식단 데이터를 반환합니다.
-    NEIS_API_KEY 미설정 시 빈 객체를 반환합니다.
-    """
-    if not NEIS_API_KEY:
-        return JSONResponse({})
-
-    today = date.today()
-    # 이전 주 ~ 다음 주 3주치 fetch
-    all_data: dict[str, list[dict[str, Any]]] = {}
-    for delta in [-7, 0, 7]:
-        base = today + timedelta(days=delta)
-        from_d, to_d = _get_week_range(base)
-        try:
-            rows = await _fetch_neis_meals(from_d, to_d)
-            all_data.update(_rows_to_meal_data(rows))
-        except Exception:
-            pass  # 일부 주 실패해도 나머지 반환
-
-    return JSONResponse(all_data)
-
 
 @app.get("/api/ratings")
-async def get_ratings() -> JSONResponse:
-    """
-    저장된 모든 별점 평균을 반환합니다.
-    구조: { "YYYYMMDD": { "조식": 4.5, "중식": 3.0 } }
-    """
-    result: dict[str, dict[str, float]] = {}
-    for date_key, meals in _ratings_store.items():
-        result[date_key] = {}
-        for meal_type, data in meals.items():
-            count = data.get("count", 0)
-            total = data.get("total", 0.0)
-            result[date_key][meal_type] = round(total / count, 1) if count else 0.0
-    return JSONResponse(result)
+async def get_ratings():
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/ratings",
+            headers=get_sb_headers(),
+            params={"select": "date,MMEAL_SC_NM,score,rating_times,total"},
+        )
+        
+        if res.status_code != 200:
+            print(f"Supabase Error: {res.text}")
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+            
+        result = {}
+        for row in res.json():
+            date = row["date"]
+            if date not in result:
+                result[date] = {}
+            result[date][row["MMEAL_SC_NM"]] = row["score"]
+        return result
 
+@app.get("/api/meals")
+async def get_meals(response: Response):
+    async with httpx.AsyncClient() as client:
+        meal_task = client.get(f"{SUPABASE_URL}/rest/v1/meal_data", headers=get_sb_headers())
+        dish_task = client.get(f"{SUPABASE_URL}/rest/v1/DDISH_NM", headers=get_sb_headers())
+        meal_res, dish_res = await asyncio.gather(meal_task, dish_task)
 
-class RatingRequest(BaseModel):
-    date_str: str   # "YYYYMMDD"
-    meal_type: str  # "조식" | "중식" | "석식"
-    score: float    # 0.5 ~ 5.0
+        meal_rows = meal_res.json() if meal_res.status_code == 200 else []
+        dish_rows = dish_res.json() if dish_res.status_code == 200 else []
 
+        dish_map = {}
+        for d in dish_rows:
+            key = (d["date"], d["MMEAL_SC_NM"])
+            if key not in dish_map:
+                dish_map[key] = []
+            dish_map[key].append(d["DDISH_NM"])
+
+        result = {}
+        for m in meal_rows:
+            date = m["date"]
+            m_type = m["MMEAL_SC_NM"]
+            if date not in result:
+                result[date] = []
+            
+            dishes = dish_map.get((date, m_type), [])
+            
+            result[date].append({
+                "MMEAL_SC_NM": m_type,
+                "DDISH_NM": dishes,
+                "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get('CAL_INFO') else None,
+                "IMG_PATH": m.get("IMG_PATH")
+            })
+        response.headers["Cache-Control"] = "public, s-maxage=3600, stale-while-revalidate=60"
+        return result
+
+class RatingPayload(BaseModel):
+    date_str: str
+    meal_type: str
+    score: float
 
 @app.post("/api/ratings")
-async def post_rating(body: RatingRequest) -> JSONResponse:
-    """별점을 저장하고 현재 평균 별점을 반환합니다."""
-    if not (0.5 <= body.score <= 5.0):
-        raise HTTPException(status_code=400, detail="score must be between 0.5 and 5.0")
+async def post_rating(payload: RatingPayload):
+    async with httpx.AsyncClient() as client:
+        get_res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/ratings",
+            headers=get_sb_headers(),
+            params={
+                "select": "id,rating_times,total",
+                "date": f"eq.{payload.date_str}",
+                "MMEAL_SC_NM": f"eq.{payload.meal_type}",
+            },
+        )
+        if get_res.status_code != 200:
+            raise HTTPException(status_code=get_res.status_code, detail=get_res.text)
+            
+        rows = get_res.json()
+        existing = rows[0] if rows else None
 
-    store = _ratings_store.setdefault(body.date_str, {})
-    entry = store.setdefault(body.meal_type, {"total": 0.0, "count": 0})
-    entry["total"] += body.score
-    entry["count"] += 1
-    fin_score = round(entry["total"] / entry["count"], 1)
+        rating_times = existing["rating_times"] if existing else 0
+        total = existing["total"] if existing else 0.0
+        new_times = rating_times + 1
+        new_total = total + payload.score
+        fin_score = round(new_total / new_times, 1)
 
-    return JSONResponse({"ok": True, "fin_score": fin_score})
+        body = {
+            "date": payload.date_str,
+            "MMEAL_SC_NM": payload.meal_type,
+            "score": fin_score,
+            "rating_times": new_times,
+            "total": new_total,
+        }
 
+        if existing:
+            save_res = await client.patch(
+                f"{SUPABASE_URL}/rest/v1/ratings",
+                headers={**get_sb_headers(), "Prefer": "return=representation"},
+                params={"id": f"eq.{existing['id']}"},
+                json=body,
+            )
+        else:
+            save_res = await client.post(
+                f"{SUPABASE_URL}/rest/v1/ratings",
+                headers={**get_sb_headers(), "Prefer": "return=representation"},
+                json=body,
+            )
+        
+        if save_res.status_code not in [200, 201]:
+            raise HTTPException(status_code=save_res.status_code, detail=save_res.text)
 
-# ── 로컬 개발용 진입점 ─────────────────────────────────────
+        return {"ok": True, "fin_score": fin_score}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("index:app", host="0.0.0.0", port=8000, reload=True)

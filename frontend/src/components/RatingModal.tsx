@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface RatingModalProps {
   isOpen: boolean;
@@ -10,33 +10,49 @@ interface RatingModalProps {
 }
 
 const RatingModal: React.FC<RatingModalProps> = ({
-  isOpen,
-  title,
-  subtitle,
-  initialScore,
-  onClose,
-  onConfirm,
+  isOpen, title, subtitle, initialScore, onClose, onConfirm,
 }) => {
   const [tempScore, setTempScore] = useState<number>(initialScore);
   const [hoverScore, setHoverScore] = useState<number>(0);
   const [saving, setSaving] = useState(false);
-  const wrapsRef = useRef<HTMLSpanElement[]>([]);
+  const wrapsRef = useRef<(HTMLSpanElement | null)[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTempScore(initialScore);
   }, [initialScore, isOpen]);
 
   function getScoreFromMouseX(e: React.MouseEvent, idx: number): number {
-    const rect = wrapsRef.current[idx - 1]?.getBoundingClientRect();
-    if (!rect) return idx;
+    const el = wrapsRef.current[idx - 1];
+    if (!el) return idx;
+    const rect = el.getBoundingClientRect();
     const x = e.clientX - rect.left;
     return x < rect.width / 2 ? idx - 0.5 : idx;
   }
 
-  function getStarClass(idx: number, score: number, hover: number): string {
-    const active = hover > 0 ? hover : score;
-    if (active >= idx) return hover > 0 ? "hover-full" : "full-fill";
-    if (active >= idx - 0.5) return hover > 0 ? "hover-half" : "half-fill";
+  // 원본 로직: wraps 배열을 뒤에서부터 순회해서 좌표 기반으로 score 계산
+  function getScoreFromEvent(e: React.MouseEvent): number {
+    for (let i = wrapsRef.current.length - 1; i >= 0; i--) {
+      const el = wrapsRef.current[i];
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+      if (e.clientX >= rect.left) {
+        const x = e.clientX - rect.left;
+        const idx = i + 1;
+        return x < rect.width / 2 ? idx - 0.5 : idx;
+      }
+    }
+    return 0.5;
+  }
+
+  function getStarClass(idx: number): string {
+    const active = hoverScore > 0 ? hoverScore : tempScore;
+    if (hoverScore > 0) {
+      if (hoverScore >= idx) return "hover-full";
+      if (hoverScore >= idx - 0.5) return "hover-half";
+      return "";
+    }
+    if (tempScore >= idx) return "full-fill";
+    if (tempScore >= idx - 0.5) return "half-fill";
     return "";
   }
 
@@ -50,34 +66,36 @@ const RatingModal: React.FC<RatingModalProps> = ({
     }
   }
 
+  if (!isOpen) return null;
+
   return (
     <div
-      className={`rating-overlay${isOpen ? " open" : ""}`}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      id="ratingOverlay"
+      style={{ display: "flex", position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 1000, alignItems: "center", justifyContent: "center" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="rating-card">
-        <button className="modal-close-btn" onClick={onClose}>
-          ✕
-        </button>
-        <h2>{title}</h2>
-        <p className="rating-subtitle">{subtitle}</p>
+        <button className="modal-close-btn" onClick={onClose}>✕</button>
+        <h2 id="modalTitle">{title}</h2>
+        <p className="rating-subtitle" id="modalSubtitle">{subtitle}</p>
 
         <div
           className="star-box"
-          onMouseLeave={() => setHoverScore(0)}
+          id="starBox"
+          onMouseLeave={() => { setHoverScore(0); }}
         >
           {[1, 2, 3, 4, 5].map((idx) => (
             <span
               key={idx}
-              className={`star-wrap ${getStarClass(idx, tempScore, hoverScore)}`}
-              ref={(el) => {
-                if (el) wrapsRef.current[idx - 1] = el;
+              className={`star-wrap ${getStarClass(idx)}`}
+              data-idx={idx}
+              ref={(el) => { wrapsRef.current[idx - 1] = el; }}
+              onMouseMove={(e) => {
+                const s = getScoreFromEvent(e);
+                setHoverScore(s);
               }}
-              onMouseMove={(e) => setHoverScore(getScoreFromMouseX(e, idx))}
               onClick={(e) => {
-                const s = getScoreFromMouseX(e, idx);
+                const s = getScoreFromEvent(e);
                 setTempScore(s);
                 setHoverScore(0);
               }}
@@ -91,6 +109,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
 
         <button
           className="confirm-btn"
+          id="confirmBtn"
           disabled={tempScore === 0 || saving}
           onClick={handleConfirm}
         >

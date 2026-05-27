@@ -8,31 +8,9 @@ import { useToast } from "./components/useToast";
 import { fetchMeals, fetchRatings, postRating } from "./api";
 import type { MealData, MealType, RatingsData } from "./types";
 
-const MOON_SVG = (
-  <>
-    <circle cx="12" cy="12" r="10" />
-    <path
-      d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z"
-      fill="currentColor"
-      stroke="none"
-    />
-  </>
-);
-
-const SUN_SVG = (
-  <>
-    <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="3" fill="currentColor" />
-    <line x1="12" y1="4.5" x2="12" y2="7.5" />
-    <line x1="12" y1="16.5" x2="12" y2="19.5" />
-    <line x1="4.5" y1="12" x2="7.5" y2="12" />
-    <line x1="16.5" y1="12" x2="19.5" y2="12" />
-    <line x1="7.3" y1="7.3" x2="9.4" y2="9.4" />
-    <line x1="14.6" y1="14.6" x2="16.7" y2="16.7" />
-    <line x1="16.7" y1="7.3" x2="14.6" y2="9.4" />
-    <line x1="9.4" y1="14.6" x2="7.3" y2="16.7" />
-  </>
-);
+// 원본 HTML의 SVG 상수 그대로
+const MOON_SVG = `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`;
+const SUN_SVG  = `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/><line x1="12" y1="4.5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="19.5" y2="12"/><line x1="7.3" y1="7.3" x2="9.4" y2="9.4"/><line x1="14.6" y1="14.6" x2="16.7" y2="16.7"/><line x1="16.7" y1="7.3" x2="14.6" y2="9.4"/><line x1="9.4" y1="14.6" x2="7.3" y2="16.7"/>`;
 
 function toDateStr(d: Date): string {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
@@ -41,45 +19,44 @@ function toDateStr(d: Date): string {
 export default function App() {
   const [allMealData, setAllMealData] = useState<MealData>({});
   const [ratings, setRatings] = useState<RatingsData>({});
-  const [viewDate, setViewDate] = useState<Date>(new Date());
-  const [mealType, setMealType] = useState<MealType>("조식");
-  const [weeklyMealType, setWeeklyMealType] = useState<MealType>("조식");
+  const [currentViewDate, setCurrentViewDate] = useState<Date>(new Date());
+  const [currentMealType, setCurrentMealType] = useState<MealType>("조식");
+  const [currentWeeklyMealType, setCurrentWeeklyMealType] = useState<MealType>("조식");
   const [isLightMode, setIsLightMode] = useState(false);
   const [ratingOpen, setRatingOpen] = useState(false);
   const [notSupportedOpen, setNotSupportedOpen] = useState(false);
   const { toast, showToast } = useToast();
 
+  // 원본 initDashboard() 로직
   useEffect(() => {
     (async () => {
       try {
-        const meals = await fetchMeals();
-        setAllMealData(meals);
+        const res = await fetchMeals();
+        setAllMealData(res);
       } catch (e) {
-        console.warn("식단 데이터 로드 실패", e);
+        console.warn("식단 데이터 로드 실패:", e);
       }
+      // loadRatings
       try {
         const r = await fetchRatings();
         setRatings(r);
+        console.log("로드된 별점 데이터:", r);
       } catch (e) {
-        console.warn("별점 데이터 로드 실패", e);
+        console.warn("ratings 로드 실패:", e);
       }
     })();
   }, []);
 
   useEffect(() => {
-    if (isLightMode) {
-      document.body.classList.add("light-mode");
-    } else {
-      document.body.classList.remove("light-mode");
-    }
+    document.body.classList.toggle("light-mode", isLightMode);
   }, [isLightMode]);
 
-  const dateStr = toDateStr(viewDate);
+  const dateStr = toDateStr(currentViewDate);
   const mealsToday = allMealData[dateStr] || [];
-  const score = ratings?.[dateStr]?.[mealType] ?? 0;
+  const score = ratings?.[dateStr]?.[currentMealType] ?? 0;
 
   const handlePrevMonth = useCallback(() => {
-    setViewDate((d) => {
+    setCurrentViewDate((d) => {
       const nd = new Date(d);
       nd.setMonth(nd.getMonth() - 1);
       return nd;
@@ -87,39 +64,48 @@ export default function App() {
   }, []);
 
   const handleNextMonth = useCallback(() => {
-    setViewDate((d) => {
+    setCurrentViewDate((d) => {
       const nd = new Date(d);
       nd.setMonth(nd.getMonth() + 1);
       return nd;
     });
   }, []);
 
+  // 날짜 클릭 시 조식으로 리셋 (원본 동일)
   const handleDateSelect = useCallback((date: Date) => {
-    setViewDate(date);
-    setMealType("조식");
+    setCurrentViewDate(date);
+    setCurrentMealType("조식");
   }, []);
 
+  // 원본 confirmRating() 로직
   async function handleConfirmRating(s: number) {
     try {
-      const result = await postRating(dateStr, mealType, s);
-      setRatings((prev) => ({
-        ...prev,
-        [dateStr]: { ...(prev[dateStr] || {}), [mealType]: result.fin_score },
-      }));
-      showToast("별점이 저장되었습니다! ⭐");
-      setRatingOpen(false);
+      const result = await postRating(dateStr, currentMealType, s);
+      if (result.ok) {
+        setRatings((prev) => ({
+          ...prev,
+          [dateStr]: { ...(prev[dateStr] || {}), [currentMealType]: result.fin_score },
+        }));
+        showToast("별점이 저장되었습니다! ⭐");
+        setRatingOpen(false);
+      } else {
+        throw new Error();
+      }
     } catch {
       showToast("저장에 실패했습니다. 네트워크 상태를 확인해 주세요.", true);
       throw new Error("저장 실패");
     }
   }
 
+  const m = String(currentViewDate.getMonth() + 1).padStart(2, "0");
+  const d = String(currentViewDate.getDate()).padStart(2, "0");
+
   return (
     <>
       <div className="dashboard-container">
         {/* 달력 */}
         <Calendar
-          viewDate={viewDate}
+          viewDate={currentViewDate}
           onDateSelect={handleDateSelect}
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
@@ -127,11 +113,11 @@ export default function App() {
 
         {/* 급식 상세 */}
         <MealDetail
-          viewDate={viewDate}
+          viewDate={currentViewDate}
           meals={mealsToday}
-          mealType={mealType}
+          mealType={currentMealType}
           score={score}
-          onMealTypeChange={setMealType}
+          onMealTypeChange={setCurrentMealType}
         />
 
         {/* 오른쪽 패널 */}
@@ -143,12 +129,15 @@ export default function App() {
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               급식 신청
             </button>
+            {/* 원본과 동일하게 innerHTML로 SVG 삽입 */}
             <button
               className="theme-icon-btn"
+              id="themeToggleBtn"
               title="테마 변경"
               onClick={() => setIsLightMode((v) => !v)}
             >
               <svg
+                id="themeIcon"
                 viewBox="0 0 24 24"
                 width="20"
                 height="20"
@@ -156,9 +145,8 @@ export default function App() {
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
-              >
-                {isLightMode ? SUN_SVG : MOON_SVG}
-              </svg>
+                dangerouslySetInnerHTML={{ __html: isLightMode ? SUN_SVG : MOON_SVG }}
+              />
             </button>
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               로그인
@@ -166,15 +154,15 @@ export default function App() {
           </div>
 
           <WeeklyPanel
-            viewDate={viewDate}
+            viewDate={currentViewDate}
             allMealData={allMealData}
-            weeklyMealType={weeklyMealType}
-            onWeeklyMealTypeChange={setWeeklyMealType}
+            weeklyMealType={currentWeeklyMealType}
+            onWeeklyMealTypeChange={setCurrentWeeklyMealType}
           />
 
           <ReviewPanel
-            viewDate={viewDate}
-            mealType={mealType}
+            viewDate={currentViewDate}
+            mealType={currentMealType}
             onToast={showToast}
           />
         </div>
@@ -183,8 +171,8 @@ export default function App() {
       {/* 별점 모달 */}
       <RatingModal
         isOpen={ratingOpen}
-        title={`${String(viewDate.getMonth() + 1).padStart(2, "0")}월 ${String(viewDate.getDate()).padStart(2, "0")}일 별점`}
-        subtitle={mealType}
+        title={`${m}월 ${d}일 별점`}
+        subtitle={currentMealType}
         initialScore={score}
         onClose={() => setRatingOpen(false)}
         onConfirm={handleConfirmRating}
@@ -192,10 +180,10 @@ export default function App() {
 
       {/* 미지원 기능 오버레이 */}
       <div
-        className={`not-supported-overlay${notSupportedOpen ? " open" : ""}`}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) setNotSupportedOpen(false);
-        }}
+        className="not-supported-overlay"
+        id="notSupportedOverlay"
+        style={{ display: notSupportedOpen ? "flex" : "none" }}
+        onClick={(e) => { if (e.target === e.currentTarget) setNotSupportedOpen(false); }}
       >
         <div className="not-supported-card">
           <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
@@ -203,9 +191,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* 토스트 */}
+      {/* 토스트 — 원본과 동일한 구조 */}
       <div
         className={`toast-notification${toast.visible ? " show" : ""}${toast.isError ? " toast-error" : ""}`}
+        id="toastNotification"
       >
         {toast.msg}
       </div>

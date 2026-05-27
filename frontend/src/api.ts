@@ -16,7 +16,7 @@ export async function postRating(
   dateStr: string,
   mealType: string,
   score: number
-): Promise<{ fin_score: number }> {
+): Promise<{ ok: boolean; fin_score: number }> {
   const res = await fetch("/api/ratings", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
