@@ -131,22 +131,11 @@ export default function App() {
             </button>
             {/* 원본과 동일하게 innerHTML로 SVG 삽입 */}
             <button
-              className="theme-icon-btn"
-              id="themeToggleBtn"
+              onClick={() => setIsDarkMode(!isDarkMode)}
               title="테마 변경"
-              onClick={() => setIsLightMode((v) => !v)}
+              className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              <svg
-                id="themeIcon"
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                dangerouslySetInnerHTML={{ __html: isLightMode ? SUN_SVG : MOON_SVG }}
-              />
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               로그인
