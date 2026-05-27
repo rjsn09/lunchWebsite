@@ -38,9 +38,9 @@ def cal_fin_score(rating_times, total_score):
     else:
         return int(fin_score)
 
-@app.get("/api")
-def health_check():
-    return {"message": "API is working!"}
+@app.get("/")
+async def read_root():
+    return {"status": "Backend is running. Please access via index.html"}
 
 @app.get("/ratings")
 @app.get("/api/ratings")
