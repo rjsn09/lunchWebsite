@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>급식 선호도 및 정보 대시보드</title>
+    <title>인마고 급식 게시판</title>
     <style>
         :root {
             --bg-color: #121212; --panel-bg: #1e1e1e;
@@ -83,20 +83,20 @@
         .star-display .s-half .s-half-bg  { color:var(--star-empty); }
         .star-display .s-half .s-half-fg  { position:absolute; top:0; left:0; overflow:hidden; width:50%; color:var(--star-filled); }
         /* --- 리뷰 슬라이드 패널 스타일 --- */
-    .right-panel { position: relative; overflow: hidden; }
-    .review-slide-container { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 50; }
-    .review-trigger { background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s; }
-    .review-trigger:hover { background: var(--btn-hover); }
-    .review-panel { width: 100%; height: 350px; background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; transform: translateY(100%);  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
-    .review-panel.open { transform: translateY(0); }
-    .review-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--table-border); background: var(--table-header-bg); }
-    .review-header h3 { margin: 0; font-size: 1.1rem; }
-    .review-close { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; font-weight: bold; }
-    .review-content { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    .review-item { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--table-border); font-size: 0.9rem; line-height: 1.4; }
-    .review-input-box { display: flex; padding: 15px; border-top: 1px solid var(--table-border); gap: 10px; background: var(--panel-bg); }
-    .review-input-box input { flex: 1; padding: 10px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--bg-color); color: var(--text-primary); outline: none; }
-    .review-input-box button { padding: 0 20px; background: var(--tab-active-bg); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 25px; position: relative; overflow: hidden; padding-bottom: 45px; }
+        .review-slide-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+        .review-trigger { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); pointer-events: auto; background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s; }
+        .review-trigger:hover { background: var(--btn-hover); }
+        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: calc(100% - 65px); background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        .review-panel.open { transform: translateY(0); }
+        .review-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--table-border); background: var(--table-header-bg); }
+        .review-header h3 { margin: 0; font-size: 1.1rem; }
+        .review-close { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; font-weight: bold; }
+        .review-content { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .review-item { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--table-border); font-size: 0.9rem; line-height: 1.4; }
+        .review-input-box { display: flex; padding: 15px; border-top: 1px solid var(--table-border); gap: 10px; background: var(--panel-bg); }
+        .review-input-box input { flex: 1; padding: 10px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--bg-color); color: var(--text-primary); outline: none; }
+        .review-input-box button { padding: 0 20px; background: var(--tab-active-bg); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
