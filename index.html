@@ -178,6 +178,7 @@
     let currentMealType       = "조식";
     let currentWeeklyMealType = "조식";
     let tempScore             = 0;
+    const API = "";
 
     async function initDashboard() {
         try {
@@ -418,7 +419,7 @@
         btn.innerText = "저장 중...";
     
         try {
-            const res = await fetch('/api/ratings', {
+            const res = await fetch(`${API}/api/ratings`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
