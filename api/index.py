@@ -13,7 +13,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 환경 변수 공백 제거
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "").strip()
 
@@ -43,6 +42,32 @@ async def get_ratings():
             if date not in result:
                 result[date] = {}
             result[date][row["MMEAL_SC_NM"]] = row["score"]
+        return result
+
+@app.get("/api/meals")
+async def get_meals():
+    async with httpx.AsyncClient() as client:
+        meal_res = await client.get(f"{SUPABASE_URL}/rest/v1/meal_data", headers=get_sb_headers())
+        meal_rows = meal_res.json() if meal_res.status_code == 200 else []
+        
+        dish_res = await client.get(f"{SUPABASE_URL}/rest/v1/DDISH_NM", headers=get_sb_headers())
+        dish_rows = dish_res.json() if dish_res.status_code == 200 else []
+
+        result = {}
+        for m in meal_rows:
+            date = m["date"]
+            if date not in result:
+                result[date] = []
+            
+            dishes = [d["DDISH_NM"] for d in dish_rows if d["date"] == date and d["MMEAL_SC_NM"] == m["MMEAL_SC_NM"]]
+            
+            result[date].append({
+                "MMEAL_SC_NM": m["MMEAL_SC_NM"],
+                "DDISH_NM": dishes,
+                "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get('CAL_INFO') else None,
+                "IMG_PATH": m.get("IMG_PATH")
+            })
+            
         return result
 
 class RatingPayload(BaseModel):

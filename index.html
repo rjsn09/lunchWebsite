@@ -182,9 +182,11 @@
 
     async function initDashboard() {
         try {
-            const res = await fetch(`${API}/src/Data/meal_data.json`);
+            const res = await fetch('/api/meals'); 
             allMealData = await res.json();
-        } catch (e) { console.warn("meal_data.json 로드 실패:", e); }
+        } catch (e) { 
+            console.warn("식단 데이터 로드 실패:", e); 
+        }
 
         await loadRatings();
         initStarEvents();
