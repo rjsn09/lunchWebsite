@@ -87,7 +87,7 @@
 <body>
 <div class="dashboard-container">
 
-    <!-- 왼쪽: 달력 -->
+    <!-- 달력 -->
     <aside class="panel left-panel">
         <div class="calendar-header">
             <button class="calendar-nav-btn" id="prevMonth">◀</button>
@@ -102,7 +102,7 @@
         </table>
     </aside>
 
-    <!-- 가운데: 급식 상세 -->
+    <!-- 급식 상세 -->
     <section class="panel middle-panel">
         <div class="middle-panel-header" id="selectedDateHeader">급식 정보</div>
         <div class="meal-tabs" id="mealTabs">
@@ -219,11 +219,9 @@
             const result = await res.json();
 
             if (result.ok) {
-                // 1. 현재 메모리에 있는 ratings 변수 업데이트
                 if (!ratings[date]) ratings[date] = {};
                 ratings[date][mealType] = result.fin_score;
 
-                // 2. 업데이트된 점수로 화면 다시 그리기
                 renderAll(); 
                 alert(`별점이 ${result.fin_score}점으로 저장되었습니다!`);
             }
@@ -236,7 +234,7 @@
 
     function getScore(dateStr, mealType) {
         const data = ratings?.[dateStr]?.[mealType];
-        return Array.isArray(data) ? data[0] : 0; 
+        return data !== undefined ? data : 0; 
     }
 
     function makeStarHtml(score) {
@@ -372,7 +370,6 @@
         const wraps = [...document.querySelectorAll('.star-wrap')];
 
         function getScoreFromEvent(e) {
-            // 각 별 wrap의 rect를 직접 사용해 정확하게 판단
             for (let i = wraps.length - 1; i >= 0; i--) {
                 const rect = wraps[i].getBoundingClientRect();
                 if (e.clientX >= rect.left) {
@@ -438,11 +435,11 @@
         const m = String(currentViewDate.getMonth() + 1).padStart(2, '0');
         const d = String(currentViewDate.getDate()).padStart(2, '0');
         const dateStr = `${y}${m}${d}`;
-    
+
         const btn = document.getElementById('confirmBtn');
         btn.disabled = true;
         btn.innerText = "저장 중...";
-    
+
         try {
             const res = await fetch(`${API}/api/ratings`, {
                 method: "POST",
@@ -453,16 +450,21 @@
                     score: tempScore
                 })
             });
-    
+
             if (res.ok) {
+                const result = await res.json();
+                
+                if (!ratings[dateStr]) ratings[dateStr] = {};
+                ratings[dateStr][currentMealType] = result.fin_score;
+
                 alert("별점이 저장되었습니다!");
-                closeRatingPanel(); // 모달 닫기
-                renderDetailPanel(); // 화면 갱신
+                closeRatingPanel();
+                renderDetailPanel(); 
             } else {
                 throw new Error();
             }
         } catch (e) {
-            alert("저장에 실패했습니다. 서버(8000포트)가 켜져 있는지 확인하세요.");
+            alert("저장에 실패했습니다. 네트워크 상태를 확인해 주세요.");
         } finally {
             btn.disabled = false;
             btn.innerText = "확인";
