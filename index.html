@@ -82,6 +82,21 @@
         .star-display .s-half { position:relative; display:inline-block; }
         .star-display .s-half .s-half-bg  { color:var(--star-empty); }
         .star-display .s-half .s-half-fg  { position:absolute; top:0; left:0; overflow:hidden; width:50%; color:var(--star-filled); }
+        /* --- 리뷰 슬라이드 패널 스타일 --- */
+    .right-panel { position: relative; overflow: hidden; }
+    .review-slide-container { position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 50; }
+    .review-trigger { background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s; }
+    .review-trigger:hover { background: var(--btn-hover); }
+    .review-panel { width: 100%; height: 350px; background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; transform: translateY(100%);  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+    .review-panel.open { transform: translateY(0); }
+    .review-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--table-border); background: var(--table-header-bg); }
+    .review-header h3 { margin: 0; font-size: 1.1rem; }
+    .review-close { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; font-weight: bold; }
+    .review-content { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .review-item { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid var(--table-border); font-size: 0.9rem; line-height: 1.4; }
+    .review-input-box { display: flex; padding: 15px; border-top: 1px solid var(--table-border); gap: 10px; background: var(--panel-bg); }
+    .review-input-box input { flex: 1; padding: 10px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--bg-color); color: var(--text-primary); outline: none; }
+    .review-input-box button { padding: 0 20px; background: var(--tab-active-bg); border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -143,7 +158,6 @@
     <div class="right-panel">
         <div class="button-group">
             <button class="action-btn" onclick="openRatingPanel()">별점 남기기</button>
-            <button class="action-btn">리뷰 남기기</button>
             <button class="action-btn">급식 신청</button>
             <button class="action-btn" id="themeToggleBtn">라이트 모드</button>
         </div>
@@ -167,6 +181,25 @@
                 </table>
             </div>
         </section>
+        <div class="review-slide-container">
+            <button class="review-trigger" onclick="toggleReview()">💬 리뷰 보기 및 작성</button>
+            <div class="review-panel" id="reviewPanel">
+                <div class="review-header">
+                    <h3>오늘의 급식 리뷰 (<span id="reviewMealType">조식</span>)</h3>
+                    <button class="review-close" onclick="toggleReview()">▼ 닫기</button>
+                </div>
+                
+                <div class="review-content" id="reviewList">
+                    <div class="review-item">오늘 고기반찬 폼 미쳤다... 👍</div>
+                    <div class="review-item">국이 조금 짰어요 ㅠㅠ</div>
+                </div>
+                
+                <div class="review-input-box">
+                    <input type="text" id="reviewInput" placeholder="바르고 고운 말로 리뷰를 남겨주세요..." onkeypress="if(event.key==='Enter') submitReview()">
+                    <button onclick="submitReview()">등록</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -469,6 +502,37 @@
             btn.disabled = false;
             btn.innerText = "확인";
         }
+    }
+
+    function toggleReview() {
+        const panel = document.getElementById('reviewPanel');
+        document.getElementById('reviewMealType').innerText = currentMealType;
+        panel.classList.toggle('open');
+    }
+
+    function submitReview() {
+        const input = document.getElementById('reviewInput');
+        const text = input.value.trim();
+        
+        if (!text) {
+            alert("리뷰 내용을 입력해주세요!");
+            return;
+        }
+
+        const reviewList = document.getElementById('reviewList');
+        const newItem = document.createElement('div');
+        newItem.className = 'review-item';
+        
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        
+        newItem.innerHTML = `<strong>익명</strong> <span style="font-size:0.75rem; color:var(--text-secondary);">${timeStr}</span><br><div style="margin-top:5px;">${text}</div>`;
+        
+        reviewList.prepend(newItem);
+        
+        input.value = '';
+        
+        reviewList.scrollTop = 0;
     }
 
     document.getElementById('ratingOverlay').addEventListener('click', function(e) {
