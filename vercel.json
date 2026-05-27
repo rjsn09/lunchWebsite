@@ -1,6 +1,8 @@
 {
-  "routes": [
-    { "src": "/api/ratings", "dest": "/api/ratings.py" },
-    { "src": "/(.*)", "dest": "/$1" }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    }
   ]
 }
