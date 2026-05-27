@@ -37,6 +37,11 @@
         .calendar-table td:hover:not(:empty) { background-color:var(--calendar-hover); }
         /* 가운데 */
         .middle-panel { flex:1.2; padding:10px 15px; overflow:hidden; display:flex; flex-direction:column; }
+        .meal-list-wrap { flex:1; overflow-y:auto; scrollbar-width:none; }
+        .meal-list-wrap::-webkit-scrollbar { display:none; }
+        /* 테마 아이콘 버튼 */
+        .theme-icon-btn { width:40px; height:40px; border-radius:50%; border:1px solid var(--btn-border); background-color:var(--btn-bg); cursor:pointer; color:var(--btn-text); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px var(--panel-shadow); transition:all 0.2s; flex-shrink:0; }
+        .theme-icon-btn:hover { background-color:var(--btn-hover); transform:translateY(-1px); }
         .middle-panel-header { font-size:1.2rem; color:var(--text-primary); border-bottom:2px solid var(--table-border); padding-bottom:8px; margin-bottom:10px; font-weight:bold; text-align:center; }
         .meal-tabs { display:flex; justify-content:center; gap:8px; margin-bottom:10px; }
         .meal-tab-btn { padding:6px 15px; font-size:0.85rem; border:none; border-radius:6px; cursor:pointer; background-color:var(--btn-bg); color:var(--btn-text); font-weight:bold; box-shadow:0 2px 4px var(--panel-shadow); transition:0.2s; }
@@ -87,7 +92,7 @@
         .review-slide-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
         .review-trigger { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); pointer-events: auto; background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s, bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 52; }
         .review-trigger:hover { background: var(--btn-hover); }
-        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 51; }
+        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: calc(100% - 62px); background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 51; }
         .review-panel.open { transform: translateY(0); }
         .review-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--table-border); background: var(--table-header-bg); }
         .review-header h3 { margin: 0; font-size: 1.1rem; }
@@ -137,7 +142,7 @@
             <img class="meal-photo" style="margin:0;border:none;position:absolute;z-index:2;display:none;">
             <span id="no-photo-text" style="color:var(--text-secondary);font-size:0.9rem;z-index:1;">사진을 불러오는 중...</span>
         </div>
-        <div style="flex:1;overflow-y:auto;">
+        <div class="meal-list-wrap">
             <table class="meal-table">
                 <thead><tr><th style="width:100%;text-align:center;">반찬명</th></tr></thead>
                 <tbody id="dynamicMealBody"></tbody>
@@ -167,7 +172,13 @@
         <div class="button-group">
             <button class="action-btn" onclick="openRatingPanel()">별점 남기기</button>
             <button class="action-btn" onclick="openNotSupportedPanel()">급식 신청</button>
-            <button class="action-btn" id="themeToggleBtn">라이트 모드</button>
+            <button class="theme-icon-btn" id="themeToggleBtn" title="테마 변경">
+                <svg id="themeIcon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>
+                </svg>
+            </button>
+            <button class="action-btn" onclick="openNotSupportedPanel()">로그인</button>
         </div>
         <section class="panel today-meal-panel">
             <h2 class="today-meal-header" id="weeklyMealHeader">이번 주 급식 식단표 (인천전자마이스터고)</h2>
@@ -544,7 +555,7 @@
         panel.classList.toggle('open');
         
         if (panel.classList.contains('open')) {
-            trigger.style.bottom = "60%";
+            trigger.style.bottom = "calc(100% - 62px)";
         } else {
             trigger.style.bottom = "0";
         }
@@ -583,21 +594,23 @@
         document.getElementById('notSupportedOverlay').style.display = 'none';
     }
 
+    const MOON_SVG = `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`;
+    const SUN_SVG  = `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/><line x1="12" y1="4.5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="19.5" y2="12"/><line x1="7.3" y1="7.3" x2="9.4" y2="9.4"/><line x1="14.6" y1="14.6" x2="16.7" y2="16.7"/><line x1="16.7" y1="7.3" x2="14.6" y2="9.4"/><line x1="9.4" y1="14.6" x2="7.3" y2="16.7"/>`;
+
     document.getElementById('ratingOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeRatingPanel();
     });
 
     document.getElementById('themeToggleBtn').addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-        document.getElementById('themeToggleBtn').innerText =
-            document.body.classList.contains('light-mode') ? '다크 모드' : '라이트 모드';
+        const isLight = document.body.classList.toggle('light-mode');
+        document.getElementById('themeIcon').innerHTML = isLight ? SUN_SVG : MOON_SVG;
     });
 
     initDashboard();
 </script>
 <div class="not-supported-overlay" id="notSupportedOverlay" onclick="if(event.target===this) closeNotSupportedPanel()">
     <div class="not-supported-card">
-        <p> 아직 서비스되지 않는 기능입니다.</p>
+        <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
         <button onclick="closeNotSupportedPanel()">확인</button>
     </div>
 </div>
