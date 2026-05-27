@@ -196,17 +196,40 @@
     async function loadRatings() {
         try {
             const res = await fetch(`/api/ratings`);
-            if (res.ok) ratings = await res.json();
+            if (res.ok) {
+                ratings = await res.json();
+                console.log("로드된 별점 데이터:", ratings);
+                renderAll();
+            }
         } catch (e) { console.warn("ratings 로드 실패:", e); }
     }
 
-    async function saveRating(dateStr, mealType, score) {
-        const res = await fetch(`/api/ratings`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ date_str: dateStr, meal_type: mealType, score })
-        });
-        if (!res.ok) throw new Error("저장 실패");
+    async function saveRating(date, mealType, score) {
+        try {
+            const res = await fetch('/api/ratings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    date_str: date,
+                    meal_type: mealType,
+                    score: score
+                })
+            });
+
+            const result = await res.json();
+
+            if (result.ok) {
+                // 1. 현재 메모리에 있는 ratings 변수 업데이트
+                if (!ratings[date]) ratings[date] = {};
+                ratings[date][mealType] = result.fin_score;
+
+                // 2. 업데이트된 점수로 화면 다시 그리기
+                renderAll(); 
+                alert(`별점이 ${result.fin_score}점으로 저장되었습니다!`);
+            }
+        } catch (e) {
+            console.error("저장 실패:", e);
+        }
     }
 
     function getDayMeals(dateStr) { return allMealData[dateStr] || []; }
