@@ -124,13 +124,17 @@ export default function App() {
         {/* 오른쪽 패널 */}
         <div className="right-panel">
           <div className="button-group">
+            {/* 1. 테마 변경 버튼 (action-btn 클래스 적용으로 스타일 통일) */}
             <button
+              className="action-btn flex items-center justify-center" 
               onClick={() => setIsLightMode(!isLightMode)}
               title="테마 변경"
-              className="flex items-center justify-center p-2 text-gray-400 transition-all duration-200 hover:text-white hover:scale-110 active:scale-95"
+              style={{ padding: '8px' }} /* 아이콘이라 글자 버튼보다 여백이 넓어 보일 수 있어 살짝 조정 */
             >
               {isLightMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
+
+            {/* 2. 기존 버튼들 */}
             <button className="action-btn" onClick={() => setRatingOpen(true)}>
               별점 남기기
             </button>
