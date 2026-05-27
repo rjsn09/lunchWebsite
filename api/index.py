@@ -38,6 +38,10 @@ def cal_fin_score(rating_times, total_score):
     else:
         return int(fin_score)
 
+@app.get("/api")
+def health_check():
+    return {"message": "API is working!"}
+
 @app.get("/api/ratings")
 async def get_ratings():
     async with httpx.AsyncClient() as client:
