@@ -42,6 +42,7 @@ def cal_fin_score(rating_times, total_score):
 def health_check():
     return {"message": "API is working!"}
 
+@app.get("/ratings")
 @app.get("/api/ratings")
 async def get_ratings():
     async with httpx.AsyncClient() as client:
@@ -67,6 +68,7 @@ class RatingPayload(BaseModel):
     meal_type: str
     score: float
 
+@app.post("/ratings")
 @app.post("/api/ratings")
 async def post_rating(payload: RatingPayload):
     async with httpx.AsyncClient() as client:
