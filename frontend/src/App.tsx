@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Sun, Moon } from "react";
 import Calendar from "./components/Calendar";
 import MealDetail from "./components/MealDetail";
 import WeeklyPanel from "./components/WeeklyPanel";
@@ -7,7 +7,6 @@ import ReviewPanel from "./components/ReviewPanel";
 import { useToast } from "./components/useToast";
 import { fetchMeals, fetchRatings, postRating } from "./api";
 import type { MealData, MealType, RatingsData } from "./types";
-import { Sun, Moon } from 'lucide-react';
 
 // 원본 HTML의 SVG 상수 그대로
 const MOON_SVG = `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`;
