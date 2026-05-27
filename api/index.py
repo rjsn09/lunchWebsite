@@ -3,6 +3,7 @@ import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import asyncio
 
 app = FastAPI()
 
@@ -47,22 +48,31 @@ async def get_ratings():
 @app.get("/api/meals")
 async def get_meals():
     async with httpx.AsyncClient() as client:
-        meal_res = await client.get(f"{SUPABASE_URL}/rest/v1/meal_data", headers=get_sb_headers())
+        meal_task = client.get(f"{SUPABASE_URL}/rest/v1/meal_data", headers=get_sb_headers())
+        dish_task = client.get(f"{SUPABASE_URL}/rest/v1/DDISH_NM", headers=get_sb_headers())
+        meal_res, dish_res = await asyncio.gather(meal_task, dish_task)
+
         meal_rows = meal_res.json() if meal_res.status_code == 200 else []
-        
-        dish_res = await client.get(f"{SUPABASE_URL}/rest/v1/DDISH_NM", headers=get_sb_headers())
         dish_rows = dish_res.json() if dish_res.status_code == 200 else []
+
+        dish_map = {}
+        for d in dish_rows:
+            key = (d["date"], d["MMEAL_SC_NM"])
+            if key not in dish_map:
+                dish_map[key] = []
+            dish_map[key].append(d["DDISH_NM"])
 
         result = {}
         for m in meal_rows:
             date = m["date"]
+            m_type = m["MMEAL_SC_NM"]
             if date not in result:
                 result[date] = []
             
-            dishes = [d["DDISH_NM"] for d in dish_rows if d["date"] == date and d["MMEAL_SC_NM"] == m["MMEAL_SC_NM"]]
+            dishes = dish_map.get((date, m_type), [])
             
             result[date].append({
-                "MMEAL_SC_NM": m["MMEAL_SC_NM"],
+                "MMEAL_SC_NM": m_type,
                 "DDISH_NM": dishes,
                 "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get('CAL_INFO') else None,
                 "IMG_PATH": m.get("IMG_PATH")
