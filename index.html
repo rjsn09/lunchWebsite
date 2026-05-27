@@ -87,7 +87,7 @@
         .review-slide-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
         .review-trigger { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); pointer-events: auto; background: var(--panel-bg); border: 2px solid var(--table-border); border-bottom: none; border-radius: 12px 12px 0 0; padding: 10px 40px; font-size: 1rem; font-weight: bold; color: var(--text-primary); cursor: pointer; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); transition: background-color 0.2s, color 0.2s, bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 52; }
         .review-trigger:hover { background: var(--btn-hover); }
-        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: calc(100% - 65px); background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 51; }
+        .review-panel { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: var(--panel-bg); border-top: 2px solid var(--table-border); display: flex; flex-direction: column; pointer-events: auto; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 -10px 30px rgba(0,0,0,0.5); z-index: 51; }
         .review-panel.open { transform: translateY(0); }
         .review-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--table-border); background: var(--table-header-bg); }
         .review-header h3 { margin: 0; font-size: 1.1rem; }
@@ -100,6 +100,11 @@
         .not-supported-card { background: var(--panel-bg); border-radius: 12px; padding: 30px; text-align: center; border: 1px solid var(--table-border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); min-width: 280px; }
         .not-supported-card p { margin: 0 0 20px 0; font-size: 1.05rem; font-weight: bold; color: var(--text-primary); }
         .not-supported-card button { background: var(--tab-active-bg); border: none; border-radius: 6px; color: white; padding: 8px 24px; font-weight: bold; cursor: pointer; }
+        /* 토스트 알림 */
+        .toast-notification { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #2d2d2d; color: #f0f0f0; padding: 12px 28px; border-radius: 10px; font-size: 0.95rem; font-weight: bold; z-index: 99999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; box-shadow: 0 6px 20px rgba(0,0,0,0.45); white-space: nowrap; border: 1px solid #555; }
+        .toast-notification.show { opacity: 1; }
+        .toast-notification.toast-error { background: #5c1a1a; border-color: #d9534f; color: #ffd5d5; }
+        body.light-mode .toast-notification { background: #333; color: #fff; }
     </style>
 </head>
 <body>
@@ -165,7 +170,7 @@
             <button class="action-btn" id="themeToggleBtn">라이트 모드</button>
         </div>
         <section class="panel today-meal-panel">
-            <h2 class="today-meal-header">이번 주 급식 식단표 (인천전자마이스터고)</h2>
+            <h2 class="today-meal-header" id="weeklyMealHeader">이번 주 급식 식단표 (인천전자마이스터고)</h2>
             <div class="meal-tabs" style="justify-content:flex-start;margin-bottom:12px;">
                 <button class="meal-tab-btn active" id="weekly-tab-조식" onclick="setWeeklyMealType('조식')">조식</button>
                 <button class="meal-tab-btn" id="weekly-tab-중식" onclick="setWeeklyMealType('중식')">중식</button>
@@ -188,7 +193,7 @@
                 <button class="review-trigger" id="reviewTriggerBtn" onclick="toggleReview()">💬 리뷰 보기 및 작성</button>
                 <div class="review-panel" id="reviewPanel">
                     <div class="review-header">
-                        <h3>오늘의 급식 리뷰 (<span id="reviewMealType">조식</span>)</h3>
+                        <h3><span id="reviewDateHeader">오늘</span>의 급식 리뷰 (<span id="reviewMealType">조식</span>)</h3>
                     </div>
                     <div class="review-content" id="reviewList">
                         <div class="review-item">오늘 고기반찬 폼 미쳤다... 👍</div>
@@ -257,7 +262,7 @@
                 ratings[date][mealType] = result.fin_score;
 
                 renderAll(); 
-                alert(`별점이 ${result.fin_score}점으로 저장되었습니다!`);
+                showToast(`별점이 ${result.fin_score}점으로 저장되었습니다! ⭐`);
             }
         } catch (e) {
             console.error("저장 실패:", e);
@@ -318,6 +323,10 @@
         const dateStr = `${y}${m}${d}`;
 
         document.getElementById('selectedDateHeader').innerText = `${y}년 ${m}월 ${d}일 급식 정보`;
+
+        // 리뷰 패널 날짜 업데이트
+        const reviewDateEl = document.getElementById('reviewDateHeader');
+        if (reviewDateEl) reviewDateEl.textContent = `${parseInt(m)}월 ${parseInt(d)}일`;
 
         const mealPhoto   = document.querySelector('.meal-photo');
         const noPhotoText = document.getElementById('no-photo-text');
@@ -383,10 +392,21 @@
     document.getElementById('prevMonth').addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderAll(); });
     document.getElementById('nextMonth').addEventListener('click', () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderAll(); });
 
+    function getWeekOfMonth(date) {
+        return Math.ceil(date.getDate() / 7);
+    }
+
     function updateWeeklyPanel(baseDate) {
         const start = new Date(baseDate);
         const day = start.getDay();
         start.setDate(start.getDate() - day + (day === 0 ? -6 : 1));
+
+        // 헤더 업데이트: 몇월 몇째주
+        const weekMonth = start.getMonth() + 1;
+        const weekNum   = getWeekOfMonth(start);
+        const headerEl  = document.getElementById('weeklyMealHeader');
+        if (headerEl) headerEl.textContent = `${weekMonth}월 ${weekNum}째주 급식 (인천전자마이스터고)`;
+
         for (let i = 1; i <= 5; i++) {
             const d = new Date(start);
             d.setDate(start.getDate() + (i - 1));
@@ -491,18 +511,29 @@
                 if (!ratings[dateStr]) ratings[dateStr] = {};
                 ratings[dateStr][currentMealType] = result.fin_score;
 
-                alert("별점이 저장되었습니다!");
+                showToast("별점이 저장되었습니다! ⭐");
                 closeRatingPanel();
                 renderDetailPanel(); 
             } else {
                 throw new Error();
             }
         } catch (e) {
-            alert("저장에 실패했습니다. 네트워크 상태를 확인해 주세요.");
+            showToast("저장에 실패했습니다. 네트워크 상태를 확인해 주세요.", true);
         } finally {
             btn.disabled = false;
             btn.innerText = "확인";
         }
+    }
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toastNotification');
+        toast.textContent = msg;
+        toast.classList.toggle('toast-error', isError);
+        toast.classList.remove('show');
+        void toast.offsetWidth; // reflow for re-trigger
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
     function toggleReview() {
@@ -513,7 +544,7 @@
         panel.classList.toggle('open');
         
         if (panel.classList.contains('open')) {
-            trigger.style.bottom = "calc(100% - 65px)";
+            trigger.style.bottom = "60%";
         } else {
             trigger.style.bottom = "0";
         }
@@ -524,7 +555,7 @@
         const text = input.value.trim();
         
         if (!text) {
-            alert("리뷰 내용을 입력해주세요!");
+            showToast("리뷰 내용을 입력해주세요!", true);
             return;
         }
 
@@ -566,9 +597,10 @@
 </script>
 <div class="not-supported-overlay" id="notSupportedOverlay" onclick="if(event.target===this) closeNotSupportedPanel()">
     <div class="not-supported-card">
-        <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
+        <p> 아직 서비스되지 않는 기능입니다.</p>
         <button onclick="closeNotSupportedPanel()">확인</button>
     </div>
 </div>
+<div class="toast-notification" id="toastNotification"></div>
 </body>
 </html>

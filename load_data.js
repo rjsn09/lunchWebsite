@@ -21,8 +21,8 @@ async function fetchMealData() {
         // [신청 인자]
         ATPT_OFCDC_SC_CODE: "E10", // 시도교육청코드
         SD_SCHUL_CODE: "7310370",   // 행정표준코드 (인천전자마이스터고)
-        MLSV_FROM_YMD: "20260501", // 급식시작일자
-        MLSV_TO_YMD: "20260531"    // 급식종료일자
+        MLSV_FROM_YMD: "20260303", // 급식시작일자
+        MLSV_TO_YMD: "20260430"    // 급식종료일자
     });
 
     const fullUrl = `${API_URL}?${params.toString()}`;
