@@ -156,7 +156,7 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username,
             type="text"
             id="reviewInput"
             value={inputValue}
-            placeholder="바르고 고운 말로 리뷰를 남겨주세요..."
+            placeholder="리뷰 내용을 입력해주세요!"
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !submitting) submitReview(); }}
             disabled={submitting}

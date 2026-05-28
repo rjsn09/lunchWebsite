@@ -24,7 +24,7 @@ body.light-mode {
   --text-primary: #333333;
   --text-secondary: #888888;
   --star-empty: #cccccc;
-  --star-filled: #d9534f;
+  --star-filled: #000000;
   --star-hover: #ffeaa7;
   --btn-bg: #ffffff;
   --btn-text: #555555;
@@ -600,21 +600,22 @@ body {
 
 .review-input-box {
   display: flex;
-  padding: 15px;
-  border-top: 1px solid var(--table-border);
-  gap: 10px;
-  background: var(--panel-bg);
+  align-items: center;
+  gap: 12px;
+}
+
+.review-input-user {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
+  padding-right: 12px;
+  border-right: 1px solid #555;
+  white-space: nowrap;
 }
 
 .review-input-box input {
   flex: 1;
-  padding: 10px;
-  border: 1px solid var(--btn-border);
-  border-radius: 6px;
-  background: var(--bg-color);
-  color: var(--text-primary);
-  outline: none;
-  font-family: inherit;
 }
 
 .review-input-box button {
