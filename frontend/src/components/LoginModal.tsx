@@ -53,19 +53,22 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username.trim(), password }),
+        body: JSON.stringify({ user_id: username.trim(), password }),
       });
       const data = await res.json();
       if (!res.ok) {
-        onToast(data.message || (tab === "login" ? "로그인에 실패했습니다." : "회원가입에 실패했습니다."), true);
+        // FastAPI HTTPException은 detail 필드에 메시지가 담김
+        onToast(data.detail || (tab === "login" ? "로그인에 실패했습니다." : "회원가입에 실패했습니다."), true);
         return;
       }
       if (tab === "register") {
         onToast("회원가입이 완료되었습니다! 로그인해주세요. 🎉");
         setTab("login");
       } else {
-        onToast(`${data.username ?? username}님, 환영합니다! 👋`);
-        onLoginSuccess(data.username ?? username, data.token ?? "");
+        // API 응답: { ok: true, user_id: "..." }
+        const displayName = data.user_id ?? username.trim();
+        onToast(`${displayName}님, 환영합니다! 👋`);
+        onLoginSuccess(displayName, data.token ?? "");
         onClose();
       }
     } catch {
