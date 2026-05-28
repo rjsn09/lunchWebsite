@@ -161,24 +161,12 @@ export default function App() {
 
             {/* 테마 토글 */}
             <button
-              className="theme-icon-btn"
+              className="action-btn flex items-center justify-center"
               onClick={() => setIsLightMode(!isLightMode)}
               title="테마 변경"
+              style={{ padding: '8px', minWidth: 'auto' }} 
             >
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                dangerouslySetInnerHTML={{
-                  __html: isLightMode
-                    ? `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/><line x1="12" y1="4.5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="19.5" y2="12"/><line x1="7.3" y1="7.3" x2="9.4" y2="9.4"/><line x1="14.6" y1="14.6" x2="16.7" y2="16.7"/><line x1="16.7" y1="7.3" x2="14.6" y2="9.4"/><line x1="9.4" y1="14.6" x2="7.3" y2="16.7"/>`
-                    : `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`,
-                }}
-              />
+              {isLightMode ? <Moon size={18} /> : <Sun size={18} />}
             </button>
 
             {/* 별점 */}
@@ -252,7 +240,7 @@ export default function App() {
         onClick={(e) => { if (e.target === e.currentTarget) setNotSupportedOpen(false); }}
       >
         <div className="not-supported-card">
-          <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
+          <p>아직 서비스되지 않는 기능입니다.</p>
           <button onClick={() => setNotSupportedOpen(false)}>확인</button>
         </div>
       </div>
