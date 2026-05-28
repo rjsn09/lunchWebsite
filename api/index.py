@@ -25,6 +25,10 @@ def get_sb_headers():
         "Content-Type": "application/json",
     }
 
+# ──────────────────────────────────────────────────────
+# 기존 엔드포인트
+# ──────────────────────────────────────────────────────
+
 @app.get("/api/ratings")
 async def get_ratings():
     async with httpx.AsyncClient() as client:
@@ -33,11 +37,8 @@ async def get_ratings():
             headers=get_sb_headers(),
             params={"select": "date,MMEAL_SC_NM,score,rating_times,total"},
         )
-        
         if res.status_code != 200:
-            print(f"Supabase Error: {res.text}")
             raise HTTPException(status_code=res.status_code, detail=res.text)
-            
         result = {}
         for row in res.json():
             date = row["date"]
@@ -45,6 +46,7 @@ async def get_ratings():
                 result[date] = {}
             result[date][row["MMEAL_SC_NM"]] = row["score"]
         return result
+
 
 @app.get("/api/meals")
 async def get_meals(response: Response):
@@ -69,17 +71,16 @@ async def get_meals(response: Response):
             m_type = m["MMEAL_SC_NM"]
             if date not in result:
                 result[date] = []
-            
             dishes = dish_map.get((date, m_type), [])
-            
             result[date].append({
                 "MMEAL_SC_NM": m_type,
                 "DDISH_NM": dishes,
-                "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get('CAL_INFO') else None,
-                "IMG_PATH": m.get("IMG_PATH")
+                "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get("CAL_INFO") else None,
+                "IMG_PATH": m.get("IMG_PATH"),
             })
         response.headers["Cache-Control"] = "public, s-maxage=3600, stale-while-revalidate=60"
         return result
+
 
 class RatingPayload(BaseModel):
     date_str: str
@@ -100,10 +101,9 @@ async def post_rating(payload: RatingPayload):
         )
         if get_res.status_code != 200:
             raise HTTPException(status_code=get_res.status_code, detail=get_res.text)
-            
+
         rows = get_res.json()
         existing = rows[0] if rows else None
-
         rating_times = existing["rating_times"] if existing else 0
         total = existing["total"] if existing else 0.0
         new_times = rating_times + 1
@@ -131,12 +131,17 @@ async def post_rating(payload: RatingPayload):
                 headers={**get_sb_headers(), "Prefer": "return=representation"},
                 json=body,
             )
-        
+
         if save_res.status_code not in [200, 201]:
             raise HTTPException(status_code=save_res.status_code, detail=save_res.text)
 
         return {"ok": True, "fin_score": fin_score}
-    
+
+
+# ──────────────────────────────────────────────────────
+# 회원 관련
+# ──────────────────────────────────────────────────────
+
 class RegisterPayload(BaseModel):
     user_id: str
     password: str
@@ -147,26 +152,22 @@ async def post_register(payload: RegisterPayload):
         check_res = await client.get(
             f"{SUPABASE_URL}/rest/v1/users",
             headers=get_sb_headers(),
-            params={"user_id": f"eq.{payload.user_id}"}
+            params={"user_id": f"eq.{payload.user_id}"},
         )
-        
         if check_res.status_code == 200 and len(check_res.json()) > 0:
             raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
 
         insert_res = await client.post(
             f"{SUPABASE_URL}/rest/v1/users",
             headers=get_sb_headers(),
-            json={
-                "user_id": payload.user_id,
-                "password": payload.password
-            }
+            json={"user_id": payload.user_id, "password": payload.password},
         )
-
         if insert_res.status_code not in [200, 201]:
             raise HTTPException(status_code=insert_res.status_code, detail=insert_res.text)
 
         return {"ok": True, "message": "회원가입이 완료되었습니다."}
-    
+
+
 class LoginPayload(BaseModel):
     user_id: str
     password: str
@@ -185,7 +186,7 @@ async def post_login(payload: LoginPayload):
         )
         if get_res.status_code != 200:
             raise HTTPException(status_code=get_res.status_code, detail=get_res.text)
-            
+
         rows = get_res.json()
         existing = rows[0] if rows else None
 
@@ -195,6 +196,85 @@ async def post_login(payload: LoginPayload):
             raise HTTPException(status_code=401, detail="비밀번호가 틀렸습니다.")
 
         return {"ok": True, "user_id": existing["user_id"]}
+
+
+# ──────────────────────────────────────────────────────
+# 리뷰
+# ──────────────────────────────────────────────────────
+
+@app.get("/api/reviews")
+async def get_reviews(date: str, meal_type: str):
+    """
+    GET /api/reviews?date=20250528&meal_type=조식
+    Supabase reviews 테이블: id, date, meal_type, user_id, text, created_at
+    """
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/reviews",
+            headers=get_sb_headers(),
+            params={
+                "select": "id,user_id,text,created_at",
+                "date": f"eq.{date}",
+                "meal_type": f"eq.{meal_type}",
+                "order": "created_at.desc",
+            },
+        )
+        if res.status_code != 200:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+
+        return [
+            {
+                "id": r["id"],
+                "author": r["user_id"],
+                "text": r["text"],
+                "time": r["created_at"][11:16] if r.get("created_at") else "",
+            }
+            for r in res.json()
+        ]
+
+
+class ReviewPayload(BaseModel):
+    date: str
+    meal_type: str
+    user_id: str
+    text: str
+
+@app.post("/api/reviews")
+async def post_review(payload: ReviewPayload):
+    """
+    POST /api/reviews
+    Body: { date, meal_type, user_id, text }
+    """
+    if not payload.text.strip():
+        raise HTTPException(status_code=400, detail="리뷰 내용을 입력해주세요.")
+    if not payload.user_id.strip():
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+
+    async with httpx.AsyncClient() as client:
+        res = await client.post(
+            f"{SUPABASE_URL}/rest/v1/reviews",
+            headers={**get_sb_headers(), "Prefer": "return=representation"},
+            json={
+                "date": payload.date,
+                "meal_type": payload.meal_type,
+                "user_id": payload.user_id,
+                "text": payload.text.strip(),
+            },
+        )
+        if res.status_code not in [200, 201]:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+
+        row = res.json()[0]
+        return {
+            "ok": True,
+            "review": {
+                "id": row["id"],
+                "author": row["user_id"],
+                "text": row["text"],
+                "time": row["created_at"][11:16] if row.get("created_at") else "",
+            },
+        }
+
 
 if __name__ == "__main__":
     import uvicorn

@@ -357,3 +357,69 @@ body.light-mode .auth-user-row {
 body.light-mode .auth-logout-btn {
   border-color: rgba(0, 0, 0, 0.15);
 }
+
+/* ══════════════════════════════════════════
+   ReviewPanel 추가 스타일
+   ══════════════════════════════════════════ */
+
+.review-loading,
+.review-empty {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.review-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--table-border);
+}
+
+.review-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.review-author {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.review-time {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.review-text {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+/* 입력창 왼쪽 유저명 뱃지 */
+.review-input-user {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--tab-active-bg);
+  white-space: nowrap;
+  padding: 0 8px 0 4px;
+  border-right: 1px solid var(--table-border);
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
+/* 비로그인 안내 */
+.review-login-notice {
+  width: 100%;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  opacity: 0.65;
+  padding: 2px 0;
+}

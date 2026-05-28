@@ -221,6 +221,7 @@ export default function App() {
           <ReviewPanel
             viewDate={currentViewDate}
             mealType={currentMealType}
+            username={auth.loggedIn ? auth.username : ""}
             onToast={showToast}
           />
         </div>
