@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import "./login-modal.css";
+import "../login-modal.css";
 
 interface Props {
   isOpen: boolean;
