@@ -136,6 +136,65 @@ async def post_rating(payload: RatingPayload):
             raise HTTPException(status_code=save_res.status_code, detail=save_res.text)
 
         return {"ok": True, "fin_score": fin_score}
+    
+class RegisterPayload(BaseModel):
+    user_id: str
+    password: str
+
+@app.post("/api/register")
+async def post_register(payload: RegisterPayload):
+    async with httpx.AsyncClient() as client:
+        check_res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/users",
+            headers=get_sb_headers(),
+            params={"user_id": f"eq.{payload.user_id}"}
+        )
+        
+        if check_res.status_code == 200 and len(check_res.json()) > 0:
+            raise HTTPException(status_code=400, detail="이미 존재하는 아이디입니다.")
+
+        insert_res = await client.post(
+            f"{SUPABASE_URL}/rest/v1/users",
+            headers=get_sb_headers(),
+            json={
+                "user_id": payload.user_id,
+                "password": payload.password
+            }
+        )
+
+        if insert_res.status_code not in [200, 201]:
+            raise HTTPException(status_code=insert_res.status_code, detail=insert_res.text)
+
+        return {"ok": True, "message": "회원가입이 완료되었습니다."}
+    
+class LoginPayload(BaseModel):
+    user_id: str
+    password: str
+
+@app.post("/api/login")
+async def post_login(payload: LoginPayload):
+    async with httpx.AsyncClient() as client:
+        get_res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/users",
+            headers=get_sb_headers(),
+            params={
+                "select": "user_id,password",
+                "user_id": f"eq.{payload.user_id}",
+                "password": f"eq.{payload.password}",
+            },
+        )
+        if get_res.status_code != 200:
+            raise HTTPException(status_code=get_res.status_code, detail=get_res.text)
+            
+        rows = get_res.json()
+        existing = rows[0] if rows else None
+
+        if not existing:
+            raise HTTPException(status_code=404, detail="존재하지 않는 아이디입니다.")
+        if existing["password"] != payload.password:
+            raise HTTPException(status_code=401, detail="비밀번호가 틀렸습니다.")
+
+        return {"ok": True, "user_id": existing["user_id"]}
 
 if __name__ == "__main__":
     import uvicorn

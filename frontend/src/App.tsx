@@ -4,19 +4,39 @@ import MealDetail from "./components/MealDetail";
 import WeeklyPanel from "./components/WeeklyPanel";
 import RatingModal from "./components/RatingModal";
 import ReviewPanel from "./components/ReviewPanel";
+import LoginModal from "./components/LoginModal";
 import { useToast } from "./components/useToast";
 import { fetchMeals, fetchRatings, postRating } from "./api";
 import type { MealData, MealType, RatingsData } from "./types";
-import { Sun, Moon } from 'lucide-react';
-
-// 원본 HTML의 SVG 상수 그대로
-const MOON_SVG = `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`;
-const SUN_SVG  = `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/><line x1="12" y1="4.5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="19.5" y2="12"/><line x1="7.3" y1="7.3" x2="9.4" y2="9.4"/><line x1="14.6" y1="14.6" x2="16.7" y2="16.7"/><line x1="16.7" y1="7.3" x2="14.6" y2="9.4"/><line x1="9.4" y1="14.6" x2="7.3" y2="16.7"/>`;
+import { Sun, Moon, LogIn, LogOut, User } from "lucide-react";
 
 function toDateStr(d: Date): string {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
+// ─── 로그인 상태 타입 ────────────────────────────────────────
+interface AuthState {
+  loggedIn: boolean;
+  username: string;
+  token: string;
+}
+
+const AUTH_KEY = "inmago_auth";
+
+function loadAuth(): AuthState {
+  try {
+    const raw = sessionStorage.getItem(AUTH_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { loggedIn: false, username: "", token: "" };
+}
+
+function saveAuth(auth: AuthState) {
+  if (auth.loggedIn) sessionStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+  else sessionStorage.removeItem(AUTH_KEY);
+}
+
+// ─── App ────────────────────────────────────────────────────
 export default function App() {
   const [allMealData, setAllMealData] = useState<MealData>({});
   const [ratings, setRatings] = useState<RatingsData>({});
@@ -26,9 +46,11 @@ export default function App() {
   const [isLightMode, setIsLightMode] = useState(false);
   const [ratingOpen, setRatingOpen] = useState(false);
   const [notSupportedOpen, setNotSupportedOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [auth, setAuth] = useState<AuthState>(loadAuth);
   const { toast, showToast } = useToast();
 
-  // 원본 initDashboard() 로직
+  // ── 식단 & 별점 로드 ──────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
@@ -37,48 +59,49 @@ export default function App() {
       } catch (e) {
         console.warn("식단 데이터 로드 실패:", e);
       }
-      // loadRatings
       try {
         const r = await fetchRatings();
         setRatings(r);
-        console.log("로드된 별점 데이터:", r);
       } catch (e) {
         console.warn("ratings 로드 실패:", e);
       }
     })();
   }, []);
 
+  // ── 테마 ──────────────────────────────────────────────────
   useEffect(() => {
     document.body.classList.toggle("light-mode", isLightMode);
   }, [isLightMode]);
 
+  // ── 유도 데이터 ───────────────────────────────────────────
   const dateStr = toDateStr(currentViewDate);
   const mealsToday = allMealData[dateStr] || [];
   const score = ratings?.[dateStr]?.[currentMealType] ?? 0;
+  const m = String(currentViewDate.getMonth() + 1).padStart(2, "0");
+  const d = String(currentViewDate.getDate()).padStart(2, "0");
 
+  // ── 핸들러 ────────────────────────────────────────────────
   const handlePrevMonth = useCallback(() => {
-    setCurrentViewDate((d) => {
-      const nd = new Date(d);
+    setCurrentViewDate((prev) => {
+      const nd = new Date(prev);
       nd.setMonth(nd.getMonth() - 1);
       return nd;
     });
   }, []);
 
   const handleNextMonth = useCallback(() => {
-    setCurrentViewDate((d) => {
-      const nd = new Date(d);
+    setCurrentViewDate((prev) => {
+      const nd = new Date(prev);
       nd.setMonth(nd.getMonth() + 1);
       return nd;
     });
   }, []);
 
-  // 날짜 클릭 시 조식으로 리셋 (원본 동일)
   const handleDateSelect = useCallback((date: Date) => {
     setCurrentViewDate(date);
     setCurrentMealType("조식");
   }, []);
 
-  // 원본 confirmRating() 로직
   async function handleConfirmRating(s: number) {
     try {
       const result = await postRating(dateStr, currentMealType, s);
@@ -98,9 +121,20 @@ export default function App() {
     }
   }
 
-  const m = String(currentViewDate.getMonth() + 1).padStart(2, "0");
-  const d = String(currentViewDate.getDate()).padStart(2, "0");
+  // ── 로그인/로그아웃 ───────────────────────────────────────
+  function handleLoginSuccess(username: string, token: string) {
+    const next: AuthState = { loggedIn: true, username, token };
+    setAuth(next);
+    saveAuth(next);
+  }
 
+  function handleLogout() {
+    setAuth({ loggedIn: false, username: "", token: "" });
+    saveAuth({ loggedIn: false, username: "", token: "" });
+    showToast("로그아웃 되었습니다.");
+  }
+
+  // ─────────────────────────────────────────────────────────
   return (
     <>
       <div className="dashboard-container">
@@ -124,26 +158,57 @@ export default function App() {
         {/* 오른쪽 패널 */}
         <div className="right-panel">
           <div className="button-group">
-            {/* 1. 테마 변경 버튼 (action-btn 클래스 적용으로 스타일 통일) */}
+
+            {/* 테마 토글 */}
             <button
-              className="action-btn flex items-center justify-center" 
+              className="theme-icon-btn"
               onClick={() => setIsLightMode(!isLightMode)}
               title="테마 변경"
-              style={{ padding: '8px' }} /* 아이콘이라 글자 버튼보다 여백이 넓어 보일 수 있어 살짝 조정 */
             >
-              {isLightMode ? <Sun size={20} /> : <Moon size={20} />}
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                dangerouslySetInnerHTML={{
+                  __html: isLightMode
+                    ? `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/><line x1="12" y1="4.5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="19.5"/><line x1="4.5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="19.5" y2="12"/><line x1="7.3" y1="7.3" x2="9.4" y2="9.4"/><line x1="14.6" y1="14.6" x2="16.7" y2="16.7"/><line x1="16.7" y1="7.3" x2="14.6" y2="9.4"/><line x1="9.4" y1="14.6" x2="7.3" y2="16.7"/>`
+                    : `<circle cx="12" cy="12" r="10"/><path d="M14.5,7.5 A5.5,5.5 0 1,0 14.5,16.5 A3.8,3.8 0 1,1 14.5,7.5 Z" fill="currentColor" stroke="none"/>`,
+                }}
+              />
             </button>
 
-            {/* 2. 기존 버튼들 */}
+            {/* 별점 */}
             <button className="action-btn" onClick={() => setRatingOpen(true)}>
               별점 남기기
             </button>
+
+            {/* 급식 신청 */}
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               급식 신청
             </button>
-            <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
-              로그인
-            </button>
+
+            {/* 로그인 / 사용자 정보 + 로그아웃 */}
+            {auth.loggedIn ? (
+              <div className="auth-user-row">
+                <span className="auth-username">
+                  <User size={13} style={{ marginRight: 4, verticalAlign: "middle" }} />
+                  {auth.username}
+                </span>
+                <button className="auth-logout-btn" onClick={handleLogout} title="로그아웃">
+                  <LogOut size={14} />
+                  <span>로그아웃</span>
+                </button>
+              </div>
+            ) : (
+              <button className="action-btn auth-login-btn" onClick={() => setLoginOpen(true)}>
+                <LogIn size={14} style={{ marginRight: 5, verticalAlign: "middle" }} />
+                로그인
+              </button>
+            )}
           </div>
 
           <WeeklyPanel
@@ -171,23 +236,29 @@ export default function App() {
         onConfirm={handleConfirmRating}
       />
 
+      {/* 로그인 모달 */}
+      <LoginModal
+        isOpen={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+        onToast={showToast}
+      />
+
       {/* 미지원 기능 오버레이 */}
       <div
         className="not-supported-overlay"
-        id="notSupportedOverlay"
         style={{ display: notSupportedOpen ? "flex" : "none" }}
         onClick={(e) => { if (e.target === e.currentTarget) setNotSupportedOpen(false); }}
       >
         <div className="not-supported-card">
-          <p>아직 서비스되지 않는 기능입니다.</p>
+          <p>⚠️ 아직 서비스되지 않는 기능입니다.</p>
           <button onClick={() => setNotSupportedOpen(false)}>확인</button>
         </div>
       </div>
 
-      {/* 토스트 — 원본과 동일한 구조 */}
+      {/* 토스트 */}
       <div
         className={`toast-notification${toast.visible ? " show" : ""}${toast.isError ? " toast-error" : ""}`}
-        id="toastNotification"
       >
         {toast.msg}
       </div>
