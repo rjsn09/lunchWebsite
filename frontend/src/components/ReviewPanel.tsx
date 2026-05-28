@@ -19,8 +19,7 @@ function toDateStr(d: Date): string {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// 🛑 금지어 목록 (필요에 따라 계속 추가하세요)
-const BAD_WORDS = ["시발", "씨발", "병신", "새끼", "지랄", "미친", "개새", "존나"];
+const BAN_WORDS = ["시발", "씨발", "병신", "새끼", "지랄", "미친", "개새", "존나"];
 
 const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username, onToast }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,13 +28,17 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username,
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [lastFetchedKey, setLastFetchedKey] = useState("");
 
   const m = String(viewDate.getMonth() + 1).padStart(2, "0");
   const d = String(viewDate.getDate()).padStart(2, "0");
   const dateStr = toDateStr(viewDate);
 
-  // 날짜 또는 식사 유형 바뀌면 리뷰 다시 불러옴
   const fetchReviews = useCallback(async () => {
+    const currentKey = `${dateStr}-${mealType}`;
+    
+    if (lastFetchedKey === currentKey && reviews.length > 0) return;
+
     setLoading(true);
     try {
       const res = await fetch(
@@ -44,17 +47,24 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username,
       if (!res.ok) throw new Error();
       const data: ReviewItem[] = await res.json();
       setReviews(data);
+      setLastFetchedKey(currentKey);
     } catch {
       if (isOpen) onToast("리뷰를 불러오지 못했습니다.", true);
     } finally {
       setLoading(false);
     }
-  }, [dateStr, mealType, isOpen, onToast]);
+  }, [dateStr, mealType, isOpen, onToast, lastFetchedKey, reviews.length]);
 
   useEffect(() => {
-    if (isOpen) fetchReviews();
-    else setReviews([]);
+    if (isOpen) {
+      fetchReviews();
+    }
   }, [isOpen, fetchReviews]);
+
+  useEffect(() => {
+    setReviews([]);
+    setLastFetchedKey("");
+  }, [dateStr, mealType]);
 
   function toggleReview() {
     setIsOpen((prev) => !prev);
@@ -67,8 +77,8 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username,
       return;
     }
 
-    const hasBadWord = BAD_WORDS.some((word) => text.includes(word));
-    if (hasBadWord) {
+    const hasBanWord = BAN_WORDS.some((word) => text.includes(word));
+    if (hasBanWord) {
       onToast("욕설이나 비속어는 포함할 수 없습니다.", true);
       return;
     }
@@ -83,7 +93,7 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username,
         body: JSON.stringify({
           date: dateStr,
           meal_type: mealType,
-          user_id: authorName, // 백엔드로 보낼 때 "익명" 또는 "실제아이디" 전송
+          user_id: authorName,
           text,
         }),
       });
