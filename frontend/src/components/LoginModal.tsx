@@ -199,3 +199,4 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
     </div>
   );
 }
+ 
