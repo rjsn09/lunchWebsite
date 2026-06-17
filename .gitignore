@@ -2,6 +2,4 @@ package.json
 package-lock.json
 node_modules
 frontend/node_modules
-dist
-frontend/dist
 data/config
