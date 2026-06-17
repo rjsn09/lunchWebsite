@@ -1,0 +1,2270 @@
+{
+  "20260330": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "기장밥(고)",
+        "떡만두국(고)",
+        "콩나물무침(고)",
+        "돈육김치볶음(고)",
+        "동그랑땡전(고)",
+        "알타리김치",
+        "사과주스(고)"
+      ],
+      "CAL_INFO": "1107.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1774862443748.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "찰보리밥(고)",
+        "돼지등뼈감자탕(고)",
+        "볼어묵곤약조림(고)",
+        "팝콘치킨샐러드(고)",
+        "석박지(고)",
+        "아이스슈(고)"
+      ],
+      "CAL_INFO": "1357.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1774862546441.jpeg"
+    }
+  ],
+  "20260331": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "귀리밥(고)",
+        "토스트딸기잼(고)",
+        "크림소스떡볶이(고)",
+        "카레소스닭볶음(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "사과(고)",
+        "흰우유(고)",
+        "해물순두부찌개"
+      ],
+      "CAL_INFO": "784.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1774908884743.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "&lt;채식여행의날&gt;",
+        "귀리밥(고)",
+        "순두부게살국(고)",
+        "시금치프리타타(고)",
+        "생선강정(고)",
+        "배추김치(고)",
+        "오이소박이(고)",
+        "쁘띠첼(밀감)(고)"
+      ],
+      "CAL_INFO": "934.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1774926412337.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "통밀밥(고)",
+        "배추된장국(고)",
+        "훈제족발(고)",
+        "파채양파무침(고)",
+        "알타리김치",
+        "쿨피스(자두)(고)",
+        "상추쌈오이스틱(고)"
+      ],
+      "CAL_INFO": "783.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1774963881894.jpeg"
+    }
+  ],
+  "20260401": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥(고)",
+        "토스트딸기잼(고)",
+        "쇠고기무국(고)",
+        "호두잔멸치볶음(고)",
+        "비엔나채소볶음(칼집)",
+        "만두탕수육(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "파인오렌지쥬스(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "849.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1774995804240.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "인델리카레라이스(고)",
+        "시금치된장국(고)",
+        "치커리황도샐러드(고)",
+        "탄두리치킨(고)",
+        "깍두기(고)",
+        "오이무피클(고)",
+        "ABC주스(고)"
+      ],
+      "CAL_INFO": "1146.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775013106772.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "혼합잡곡밥(고)",
+        "두부김치국(고)",
+        "우삼겹숙주볶음(고)",
+        "알감자버터구이(고)",
+        "열무김치(고)",
+        "딸기(고)"
+      ],
+      "CAL_INFO": "785.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775122491344.jpeg"
+    }
+  ],
+  "20260402": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차조밥(고)",
+        "토스트딸기잼(고)",
+        "돈육김치찌개(고)",
+        "닭봉떡조림(고)",
+        "치커리사과유자청무침(고)",
+        "깍두기(고)",
+        "씨리얼(고)",
+        "딸기(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "714.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775094388030.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "통밀밥(고)",
+        "마라탕(고)",
+        "풋고추달걀장조림(고)",
+        "올방개묵무침(고)",
+        "삼치살카레구이(고)",
+        "배추김치(고)",
+        "바나나우유(고)"
+      ],
+      "CAL_INFO": "1017.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775122452989.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "발아현미밥(고)",
+        "고추장찌개(고)",
+        "스크램블에그",
+        "함박스테이크&amp;샐러드채소",
+        "배추김치(고)",
+        "하루요거트쑥쑥(딸기)(고)"
+      ],
+      "CAL_INFO": "1020.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775122472183.jpeg"
+    }
+  ],
+  "20260403": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥(고)",
+        "토스트딸기잼(고)",
+        "달래된장찌개(고)",
+        "미니떡갈비조림(고)",
+        "양상추샐러드(유자드레싱)(고)",
+        "돈육김치볶음(고)",
+        "알타리김치",
+        "씨리얼(고)",
+        "감귤주스(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "738.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775168144330.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "&lt;푸르Day,맛나Day&gt;",
+        "현미찹쌀밥(고)",
+        "어묵우동국(고)",
+        "떡볶이(고)",
+        "참나물샐러드(고)",
+        "새우튀김&amp;머스타드소스(고)",
+        "배추김치(고)",
+        "초코아이스크림"
+      ],
+      "CAL_INFO": "1130.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775185501248.jpg"
+    }
+  ],
+  "20260406": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "혼합잡곡밥(고)",
+        "육개장(고)",
+        "청양풍찜닭(고)",
+        "쫄면야채무침(고)",
+        "감자베이컨볶음(고)",
+        "백김치(고)",
+        "하이요구르트(고)"
+      ],
+      "CAL_INFO": "1157.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775444704102.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "통밀밥(고)",
+        "우렁된장찌개(고)",
+        "새송이버섯부추무침(고)",
+        "제육볶음(고)",
+        "백김치(고)",
+        "바나나(고)"
+      ],
+      "CAL_INFO": "748.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775466820795.jpg"
+    }
+  ],
+  "20260407": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥(고)",
+        "토스트딸기잼(고)",
+        "사골떡국(고)",
+        "그린샐러드(고)",
+        "고추잡채(고)",
+        "칠리소스만두강정(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "토핑요거트(다크초코)(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1666.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775526638739.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "차수수밥(고)",
+        "떡만두국(고)",
+        "콩나물무침(고)",
+        "불고기낙지볶음(고)",
+        "배추김치(고)",
+        "블루베리요거트(고)"
+      ],
+      "CAL_INFO": "1065.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775596651299.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "마파두부덮밥(고)",
+        "계란실파국(고)",
+        "연근땅콩조림(고)",
+        "순살치킨&amp;화이트소스(고)",
+        "깍두기(고)",
+        "딸기아이스찰떡(고)"
+      ],
+      "CAL_INFO": "1264.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775552845832.jpg"
+    }
+  ],
+  "20260408": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차조밥(고)",
+        "토스트딸기잼(고)",
+        "황태무국(고)",
+        "순살간장양념찜닭(고)",
+        "과일샐러드(고)",
+        "순대야채볶음(고)",
+        "깍두기(고)",
+        "씨리얼(고)",
+        "흰우유(고)",
+        "윌요구르트(고)"
+      ],
+      "CAL_INFO": "1256.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776221908460.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "목살깍두기볶음밥(고)",
+        "팽이버섯된장국(고)",
+        "콘샐러드(고)",
+        "언양식반달불고기(고)",
+        "배추김치(고)",
+        "아이스슈(고)"
+      ],
+      "CAL_INFO": "1025.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775617329761.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "차수수밥(고)",
+        "콩나물국(고)",
+        "달래청경채겉절이(고)",
+        "소불고기버섯볶음(고)",
+        "미트볼그라땡",
+        "알타리김치",
+        "딸바우유(고)"
+      ],
+      "CAL_INFO": "1153.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775636673759.jpg"
+    }
+  ],
+  "20260409": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "귀리밥(고)",
+        "토스트딸기잼(고)",
+        "갈비탕(고)",
+        "감자어묵조림(고)",
+        "마카로니샐러드(고)",
+        "동그랑땡전(고)",
+        "석박지(고)",
+        "씨리얼(고)",
+        "바나나(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1352.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776221983360.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "발아현미밥(고)",
+        "삼색수제비국(고)",
+        "연두부찜(고)",
+        "오이상추겉절이(고)",
+        "등갈비바베큐폭립(고)",
+        "배추김치(고)",
+        "사과(고)"
+      ],
+      "CAL_INFO": "1237.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775704128344.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "알옥수수밥(고)",
+        "양지쌀국수",
+        "팽이버섯미역줄기볶음(고)",
+        "통살새우까스&amp;치폴레마요소스(고)",
+        "배추김치(고)",
+        "비요뜨(베리)(고)"
+      ],
+      "CAL_INFO": "1022.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775725981189.jpg"
+    }
+  ],
+  "20260410": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "찰보리밥(고)",
+        "토스트딸기잼(고)",
+        "고추장찌개(고)",
+        "돈육계란장조림(고)",
+        "실곤약채소무침(고)",
+        "들기름김구이(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "초코에몽(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "983.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775777402768.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "추가밥(고)",
+        "돈코츠라멘(고)",
+        "오이깍두기(고)",
+        "칠리탕수육(고)",
+        "배추겉절이(고)",
+        "요거트스무디(고)"
+      ],
+      "CAL_INFO": "1412.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1775792796077.jpeg"
+    }
+  ],
+  "20260413": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "흑미밥(고)",
+        "어묵쑥갓국(고)",
+        "갈비만두(고)",
+        "청경채오이무침(고)",
+        "숯불갈비맛오리볶음(고)",
+        "배추김치(고)",
+        "짜요짜요(고)"
+      ],
+      "CAL_INFO": "1167.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776049805394.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "하이스카레밥(돼지고기)(고)",
+        "맑은유부국(고)",
+        "미니떡갈비조림(고)",
+        "콩가루드레싱샐러드(고)",
+        "배추김치(고)",
+        "티라미수케이크(고)"
+      ],
+      "CAL_INFO": "1165.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776135841363.jpeg"
+    }
+  ],
+  "20260414": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥(고)",
+        "토스트딸기잼(고)",
+        "건새우아욱국(고)",
+        "돈사태김치찜(고)",
+        "부추양파무침(고)",
+        "직화후랑크구이(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "청포도주스(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1077.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776129615240.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "현미찹쌀밥(고)",
+        "설렁탕(소면)(고)",
+        "메추리알감자조림(고)",
+        "생선까스/콘소스(고)",
+        "석박지(고)",
+        "단방울토마토(고)"
+      ],
+      "CAL_INFO": "958.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776135820245.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "아미노쌀밥(고)",
+        "찹쌀꽈배기(고)",
+        "참치김치찌개(고)",
+        "목살찹스테이크(고)",
+        "청포묵김무침(고)",
+        "깍두기(고)"
+      ],
+      "CAL_INFO": "1059.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776159978713.jpeg"
+    }
+  ],
+  "20260415": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "흑미밥(고)",
+        "토스트딸기잼(고)",
+        "참치김치찌개(고)",
+        "맛살달걀찜(고)",
+        "소불고기버섯볶음(고)",
+        "알타리김치",
+        "씨리얼(고)",
+        "파인애플(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "860.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776212757051.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "귀리밥(고)",
+        "콩나물국(고)",
+        "양상추키위샐러드(고)",
+        "마늘쫑어묵볶음(고)",
+        "트러플양송이크림함박스테이크(고)",
+        "깍두기(고)",
+        "청귤이탱귤에이드(고)"
+      ],
+      "CAL_INFO": "953.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776222473434.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "현미찹쌀밥(고)",
+        "콩가루배추국(고)",
+        "피망쌈장무침(고)",
+        "돈육주꾸미볶음(고)",
+        "햄두부구이(고)",
+        "깍두기(고)",
+        "사과주스(고)"
+      ],
+      "CAL_INFO": "1051.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776308700249.jpeg"
+    }
+  ],
+  "20260416": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차조밥(고)",
+        "토스트딸기잼(고)",
+        "애호박된장찌개(고)",
+        "메추리알감자조림(고)",
+        "숙주삼색무침(고)",
+        "한입치즈카츠&amp;머스타드(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "사과주스(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1147.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776296315841.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "차수수밥(고)",
+        "애호박된장찌개(고)",
+        "삼겹살버섯구이(고)",
+        "파채양파무침(고)",
+        "보쌈김치(고)",
+        "쿨피스(자두)(고)",
+        "상추쌈오이스틱(고)"
+      ],
+      "CAL_INFO": "1083.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776308676335.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "추가밥(고)",
+        "미트소스스파게티(고)",
+        "양송이크림스프(고)",
+        "팝콘치킨샐러드(고)",
+        "오이피클무침(고)",
+        "케이준치킨샐러드(고)",
+        "조각피자(고)",
+        "복숭아주스(고)"
+      ],
+      "CAL_INFO": "1438.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776330970673.jpeg"
+    }
+  ],
+  "20260417": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "카레라이스(고)",
+        "토스트딸기잼(고)",
+        "팽이버섯된장국(고)",
+        "닭봉떡조림(고)",
+        "오이부추무침(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "카프리썬(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1111.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776388866319.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "베이컨갈릭볶음밥(고)",
+        "두부계란탕(고)",
+        "LA돼지갈비구이(고)",
+        "오이소박이(고)",
+        "깍두기(고)",
+        "바나나망고(고)"
+      ],
+      "CAL_INFO": "1065.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776399198467.jpeg"
+    }
+  ],
+  "20260420": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "통밀밥(고)",
+        "조랭이미역국(고)",
+        "매운돼지갈비떡찜(고)",
+        "잡채(고)",
+        "배추겉절이(고)",
+        "골드키위(고)"
+      ],
+      "CAL_INFO": "986.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776654218253.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "찰보리밥(고)",
+        "도라지오이생채(고)",
+        "비엔나떡케첩볶음(고)",
+        "가자미버터구이(고)",
+        "석박지(고)",
+        "딸기우유(고)",
+        "닭장각삼계탕(고)"
+      ],
+      "CAL_INFO": "1379.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776673323585.jpg"
+    }
+  ],
+  "20260421": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차조밥(고)",
+        "토스트딸기잼(고)",
+        "꼬치어묵국(고)",
+        "시즈닝웨지감자(고)",
+        "등갈비바베큐조림(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "사과(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1301.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776807958440.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "&lt;푸르Day,맛나Day&gt;",
+        "혼합잡곡밥(고)",
+        "감자옹심이국(고)",
+        "연근흑임자샐러드(고)",
+        "생선강정(고)",
+        "콘치즈구이(고)",
+        "배추김치(고)",
+        "초코우유(고)"
+      ],
+      "CAL_INFO": "1211.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776807936930.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "발아현미밥(고)",
+        "얼큰순대국(고)",
+        "햄감자조림(고)",
+        "청경채무침(고)",
+        "치킨너겟/머스터드소스",
+        "배추김치(고)",
+        "파인애플(고)"
+      ],
+      "CAL_INFO": "1263.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776763812491.jpg"
+    }
+  ],
+  "20260422": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "찰보리밥(고)",
+        "토스트딸기잼(고)",
+        "설렁탕(고)",
+        "참나물무침(고)",
+        "참치김치볶음(고)",
+        "떡갈비(고)",
+        "석박지(고)",
+        "씨리얼(고)",
+        "마시는요거트(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1091.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776817839113.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "비빔밥&amp;약고추장(고)",
+        "건새우아욱국(고)",
+        "뮤즐리잔멸치볶음(고)",
+        "닭꼬치(고)",
+        "백김치(고)",
+        "망고주스(고)"
+      ],
+      "CAL_INFO": "946.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776827281526.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "기장밥(고)",
+        "짬뽕수제비국(고)",
+        "골뱅이쫄면무침(고)",
+        "들깨백불고기(고)",
+        "백김치(고)",
+        "오렌지(고)"
+      ],
+      "CAL_INFO": "1025.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776849006128.jpg"
+    }
+  ],
+  "20260423": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥(고)",
+        "자장소스(고)",
+        "토스트딸기잼(고)",
+        "백순두부탕(고)",
+        "오이깍두기(고)",
+        "제육강정(고)",
+        "맛김치(고)",
+        "씨리얼(고)",
+        "단방울토마토(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "981.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776899371313.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "차조밥(고)",
+        "쇠고기당면계란국(고)",
+        "돼지갈비김치찜(고)",
+        "부들어묵소세지볶음(고)",
+        "회오리쏘빵(고)",
+        "깍두기(고)"
+      ],
+      "CAL_INFO": "1309.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776914052472.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "김밥볶음밥(고)",
+        "어묵쑥갓국(고)",
+        "떡볶이(고)",
+        "김말이(고)",
+        "배추김치(고)",
+        "애플망고요구르트(고)",
+        "스틱단무지(고)"
+      ],
+      "CAL_INFO": "968.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776932685606.jpg"
+    }
+  ],
+  "20260424": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차조밥(고)",
+        "토스트딸기잼(고)",
+        "육개장(고)",
+        "마카로니샐러드(고)",
+        "불고기낙지볶음(고)",
+        "감자채볶음(고)",
+        "깍두기(고)",
+        "씨리얼(고)",
+        "오렌지쥬스(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1093.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1776982949917.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "추가밥(고)",
+        "자장면(고)",
+        "단무지깻잎무침(고)",
+        "탕수육(고)",
+        "배추김치(고)",
+        "탕수육소스(고)",
+        "청포도주스(피크닉)"
+      ],
+      "CAL_INFO": "1046.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777035197067.jpeg"
+    }
+  ],
+  "20260427": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "현미찹쌀밥(고)",
+        "비빔막국수",
+        "배추된장국(고)",
+        "수육(고)",
+        "보쌈김치(고)",
+        "플리또청포도(고)",
+        "상추쌈오이스틱(고)"
+      ],
+      "CAL_INFO": "1055.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777259917618.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "흑미밥(고)",
+        "도토리묵국(냉)(고)",
+        "돼지갈비떡찜(고)",
+        "콩나물잡채(고)",
+        "배추김치(고)",
+        "바나나망고(고)"
+      ],
+      "CAL_INFO": "1072.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777281439671.jpeg"
+    }
+  ],
+  "20260428": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "현미찹쌀밥(고)",
+        "토스트딸기잼(고)",
+        "모듬햄찌개(고)",
+        "도토리묵상추무침(고)",
+        "닭볶음탕(고)",
+        "미니고로케&amp;케찹(고)",
+        "백김치(고)",
+        "씨리얼(고)",
+        "이오요구르트(고)",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1112.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777331023739.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "귀리밥(고)",
+        "쇠고기무국(고)",
+        "숙주삼색무침(고)",
+        "햄마늘쫑볶음(고)",
+        "콘치즈닭다리구이(고)",
+        "배추김치(고)",
+        "사과(고)"
+      ],
+      "CAL_INFO": "1303.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777345729197.jpeg"
+    }
+  ],
+  "20260429": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "찰보리밥(고)",
+        "부대찌개&amp;라면사리(고)",
+        "치커리사과유자청무침(고)",
+        "명엽채땅콩볶음(고)",
+        "통등심돈까스(고)",
+        "알타리김치",
+        "떠먹는요구르트(고)"
+      ],
+      "CAL_INFO": "1258.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777431640670.jpeg"
+    }
+  ],
+  "20260430": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "아미노쌀밥(고)",
+        "갈비탕(고)",
+        "새송이어묵볶음(고)",
+        "납작만두&amp;비빔야채(고)",
+        "석박지(고)",
+        "포도(고)"
+      ],
+      "CAL_INFO": "943.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1777520021183.jpeg"
+    }
+  ],
+  "20260506": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "카레라이스1",
+        "달걀실파국1",
+        "오이양파무침1",
+        "수제잠발라야닭다리구이",
+        "배추김치1",
+        "구슬아이스크림1"
+      ],
+      "CAL_INFO": "802.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778037581555.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "귀리밥",
+        "순두부찌개1",
+        "상추&amp;깻잎/수제쌈장",
+        "야채쫄면",
+        "삼겹살오븐구이",
+        "배추김치1",
+        "파인애플1"
+      ],
+      "CAL_INFO": "1145.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778058983372.jpg"
+    }
+  ],
+  "20260507": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "쌀밥",
+        "오징어무국1",
+        "마카로니콘치즈",
+        "진미채볶음1",
+        "간장오리불고기",
+        "배추김치1",
+        "딸기미니도넛",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1144.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778117185371.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "쇠고기미역국1",
+        "돈육갈비양념구이1",
+        "잡채1",
+        "배추김치1",
+        "크레이프케이크"
+      ],
+      "CAL_INFO": "914.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778123051761.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "쌀밥",
+        "부대찌개1",
+        "궁중떡볶이",
+        "게살크림고로케",
+        "깍두기",
+        "마시는 파인한 자몽"
+      ],
+      "CAL_INFO": "1114.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778141597874.jpg"
+    }
+  ],
+  "20260508": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "흑미밥",
+        "삼색수제비국",
+        "분모자로제찜닭",
+        "숙주미나리무침",
+        "스크램블에그1",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)",
+        "카프리썬"
+      ],
+      "CAL_INFO": "1231.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778207551545.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "&lt;푸르Day,맛나Day&gt;",
+        "추가밥",
+        "잔치국수1",
+        "코다리맛쵸킹",
+        "모짜치즈볼/뿌링소스",
+        "배추겉절이1",
+        "칼슘후레쉬업"
+      ],
+      "CAL_INFO": "1087.9 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778234327616.jpeg"
+    }
+  ],
+  "20260511": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "보리밥/김가루",
+        "맑은콩나물국1",
+        "춘천닭갈비",
+        "고구마맛탕1",
+        "배추김치1",
+        "청포도"
+      ],
+      "CAL_INFO": "792.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778468332021.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "대패삼겹살비빔밥",
+        "감자계란국",
+        "숙주나물무침",
+        "배추김치1",
+        "콘크러스트 피자",
+        "스위트플럼주스"
+      ],
+      "CAL_INFO": "1205.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778487556199.jpeg"
+    }
+  ],
+  "20260512": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "쌀밥",
+        "조랭이떡국1",
+        "돼지고기장조림1",
+        "야채계란찜",
+        "시금치무침1",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "끼리스틱치즈케익",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "996.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778539520620.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "소보로비빔밥",
+        "차돌된장찌개",
+        "가지양파구이무침(공통)",
+        "뿌윙크치즈소떡소떡",
+        "열무김치",
+        "스위트매실주스"
+      ],
+      "CAL_INFO": "717.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778555093498.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "현미밥",
+        "참치김치찌개1",
+        "그린샐러드/참깨D",
+        "부들어묵볶음1",
+        "바비큐폭립",
+        "석박지",
+        "빨미까레"
+      ],
+      "CAL_INFO": "1147.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778573864961.jpeg"
+    }
+  ],
+  "20260513": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "간장계란밥",
+        "김치콩나물국",
+        "멸치볶음",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "비타초코우유",
+        "콘크림함박스테이크",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1079.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778624075364.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "&lt;푸르Day,맛나Day&gt;",
+        "친환경칼슘찹쌀밥",
+        "짬뽕순두부찌개",
+        "샐러드파스타",
+        "치즈갈릭연어스테이크1",
+        "배추김치1",
+        "카프리썬"
+      ],
+      "CAL_INFO": "903.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778641546284.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "차수수밥",
+        "육개장1",
+        "계란말이",
+        "언양식불고기/파채1",
+        "석박지",
+        "메론1"
+      ],
+      "CAL_INFO": "936.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778675608447.jpeg"
+    }
+  ],
+  "20260514": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차조밥",
+        "닭곰탕1",
+        "고구마단호박샐러드",
+        "온두부&amp;돈육김치볶음",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "요거톡 초코필로우&amp;크런치",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1230.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778709998740.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "현미밥",
+        "유부장국1",
+        "고추잡채/꽃빵1",
+        "총각김치",
+        "마파두부소스",
+        "납작복숭아허니그린티"
+      ],
+      "CAL_INFO": "762.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778727589726.jpeg"
+    }
+  ],
+  "20260515": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차수수밥",
+        "시금치된장국1",
+        "야채무침",
+        "소고기당면불고기",
+        "납작부침만두",
+        "석박지",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1322.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778796607536.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "쇠고기야채죽1",
+        "수제통살치킨버거(TX버거)",
+        "야채피클1",
+        "롱치즈스틱",
+        "케이준감자튀김",
+        "배추김치1",
+        "비타민음료"
+      ],
+      "CAL_INFO": "1087.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1778814514221.jpg"
+    }
+  ],
+  "20260518": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "맑은순두부들깨탕",
+        "애호박새우젓볶음1",
+        "치즈불닭1",
+        "오지치즈후라이",
+        "백김치1",
+        "파인애플1"
+      ],
+      "CAL_INFO": "1057.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779074827807.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "쌀밥",
+        "호박고추장찌개1",
+        "동파육",
+        "콩나물잡채",
+        "배추김치1",
+        "글레이즈드 도넛"
+      ],
+      "CAL_INFO": "924.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779095414610.jpg"
+    }
+  ],
+  "20260519": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "오므라이스",
+        "달걀실파국1",
+        "부대볶음",
+        "참나물무침1",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "스테비아 토마토",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "889.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779231588572.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "된장찌개1",
+        "실곤약야채무침1",
+        "가니쉬",
+        "목살 스테이크",
+        "배추김치1",
+        "스위트청포도주스"
+      ],
+      "CAL_INFO": "867.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779160224438.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "계란볶음밥",
+        "마라탕",
+        "청경채무침",
+        "북경식꿔바로우",
+        "배추김치1",
+        "슬러쉬레몬"
+      ],
+      "CAL_INFO": "1124.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779179058914.jpg"
+    }
+  ],
+  "20260520": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "흑미밥",
+        "돈육김치찌개1",
+        "숙주미나리무침",
+        "구이햄1",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)",
+        "파래자반(완)",
+        "피크닉"
+      ],
+      "CAL_INFO": "913.7 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779231567214.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "크림스프1",
+        "열대과일샐러드1",
+        "고구마치즈돈까스",
+        "배추김치1",
+        "캐치 티니핑 요구르트"
+      ],
+      "CAL_INFO": "990.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779246404980.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "차조밥",
+        "맑은콩나물국1",
+        "야채계란찜",
+        "브로콜리크래미무침",
+        "순대곱창볶음",
+        "총각김치",
+        "자몽허니블랙티"
+      ],
+      "CAL_INFO": "828.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779265196226.jpg"
+    }
+  ],
+  "20260521": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "귀리밥",
+        "맑은미역국1",
+        "오징어볶음1",
+        "에그랑땡",
+        "석박지",
+        "바나나우유",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1024.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779333835347.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "기장밥",
+        "북어감자국",
+        "단호박꿀찜",
+        "부추무침/",
+        "오리불고기1",
+        "총각김치",
+        "스위트매실주스"
+      ],
+      "CAL_INFO": "874.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779333814726.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "귀리밥",
+        "묵은지감자탕",
+        "청포묵김가루무침1",
+        "비엔나케찹볶음(부)1",
+        "코다리맛쵸킹",
+        "총각김치",
+        "메론1"
+      ],
+      "CAL_INFO": "1268.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779351422990.jpg"
+    }
+  ],
+  "20260522": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "쌀밥",
+        "경상도식쇠고기무국1",
+        "콩나물맛살겨자냉채",
+        "한입돈까스",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)",
+        "체리"
+      ],
+      "CAL_INFO": "941.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779401686276.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "현미밥",
+        "설렁탕/소면사리1",
+        "돈육메추리알조림1",
+        "고구마순들깨볶음",
+        "오징어김치전",
+        "석박지",
+        "마시는달콤한하루"
+      ],
+      "CAL_INFO": "841.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779418483575.jpeg"
+    }
+  ],
+  "20260526": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "귀리밥",
+        "간장비빔국수",
+        "들깨미역국1",
+        "브로콜리크래미무침",
+        "치폴레생선까스",
+        "석박지",
+        "마시는상큼한하루"
+      ],
+      "CAL_INFO": "813.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779768317014.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "차조밥",
+        "꽃게된장국",
+        "취나물무침1",
+        "버섯소불고기1",
+        "두부구이/양념장1",
+        "배추김치1",
+        "수제에그타르트"
+      ],
+      "CAL_INFO": "1027.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779787209262.jpeg"
+    }
+  ],
+  "20260527": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "호박고추장찌개1",
+        "시금치프리타타",
+        "허브치킨플레로티1",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "비타초코우유",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1071.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779833459675.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "가쓰오유부국1",
+        "그린샐러드/오리엔탈D",
+        "콘크림함박스테이크",
+        "햄마늘쫑볶음",
+        "깍두기",
+        "청포도에이드"
+      ],
+      "CAL_INFO": "868.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779851691250.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "김치볶음밥",
+        "미니우동1",
+        "시금치무침1",
+        "수제닭다리구이/머스터드1",
+        "백김치1",
+        "포도"
+      ],
+      "CAL_INFO": "932.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779870175898.jpeg"
+    }
+  ],
+  "20260528": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차수수밥",
+        "감자수제비국",
+        "묵은지사태찜",
+        "오이지무침1",
+        "굴소스볼어묵볶음",
+        "배추김치1",
+        "마시는유산균",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1024.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779919950157.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "매콤낙지볶음",
+        "차수수밥",
+        "쑥갓어묵국1",
+        "미역줄기맛살볶음1",
+        "콘소메연근튀김",
+        "백김치1",
+        "구슬아이스크림"
+      ],
+      "CAL_INFO": "768.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1779937540131.jpeg"
+    }
+  ],
+  "20260601": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "쇠고기무국1",
+        "고등어김치조림1",
+        "콩나물무침1",
+        "구이햄1",
+        "깍두기",
+        "마시는 파인한 자몽"
+      ],
+      "CAL_INFO": "823.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780307667078.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "추가밥",
+        "투움바파스타",
+        "옥수수스프1",
+        "열대과일샐러드1",
+        "닭날개오븐구이",
+        "배추김치1",
+        "비타민음료"
+      ],
+      "CAL_INFO": "1327.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780305250734.jpg"
+    }
+  ],
+  "20260602": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "간장계란밥",
+        "물만두국",
+        "시금치무침1",
+        "온두부&amp;돈육김치볶음",
+        "석박지",
+        "씨리얼(고)",
+        "토스트잼",
+        "꺽어먹는요거톡",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1175.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780397881927.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "현미밥",
+        "버섯매운국1",
+        "비름나물 무침",
+        "치폴레 오리훈제",
+        "햄감자채볶음1",
+        "배추김치1",
+        "비타초코우유"
+      ],
+      "CAL_INFO": "649.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780369509237.jpg"
+    }
+  ],
+  "20260604": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "차수수밥",
+        "부대찌개1",
+        "뼈없는찜닭1",
+        "야채무침",
+        "납작부침만두",
+        "깍두기",
+        "마시는달콤한하루"
+      ],
+      "CAL_INFO": "1069.3 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780570380174.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "보리밥",
+        "설렁탕/소면사리1",
+        "연근땅콩조림(자율)",
+        "부추무침/",
+        "파불고기(간장)",
+        "석박지",
+        "스위트매실주스"
+      ],
+      "CAL_INFO": "777.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780564667489.jpg"
+    }
+  ],
+  "20260605": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "기장밥",
+        "두부김치국",
+        "베이컨스크램블에그1",
+        "돈육짜장볶음1",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)",
+        "아침에주스"
+      ],
+      "CAL_INFO": "954.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780887937488.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "쇠고기미역국1",
+        "매운돼지갈비찜1",
+        "잡채1",
+        "배추김치1",
+        "초코케익"
+      ],
+      "CAL_INFO": "940.0 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780637989664.jpeg"
+    }
+  ],
+  "20260608": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "찰옥수수밥",
+        "오징어무국1",
+        "매콤팽이버섯볶음",
+        "간장오리불고기",
+        "총각김치",
+        "구슬아이스크림1",
+        "비타C레몬무쌈"
+      ],
+      "CAL_INFO": "675.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780887856551.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "쌀밥",
+        "시래기된장국",
+        "마카로니콘치즈",
+        "숙주미나리무침",
+        "춘천닭갈비",
+        "배추김치1",
+        "팝콘1"
+      ],
+      "CAL_INFO": "950.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780927014443.jpeg"
+    }
+  ],
+  "20260609": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "장조림버터비빔밥",
+        "두부새우젓국1",
+        "해쉬브라운/케찹1",
+        "새우부추만두1",
+        "배추겉절이1",
+        "씨리얼(고)",
+        "토스트잼",
+        "포도주스1",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1207.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1780961455597.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "맑은콩나물국1",
+        "제육볶음",
+        "애느타리버섯볶음1",
+        "두부구이/양념장1",
+        "볶은김치1",
+        "머스캣코코"
+      ],
+      "CAL_INFO": "768.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781074712299.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "현미밥",
+        "우거지갈비탕",
+        "치커리사과무침1",
+        "생선까스/타르타르소스",
+        "깍두기",
+        "딸기요플레"
+      ],
+      "CAL_INFO": "899.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781074737130.jpeg"
+    }
+  ],
+  "20260610": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "흑미밥",
+        "삼색수제비국",
+        "분모자로제찜닭",
+        "멸치볶음",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "비타초코우유",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1071.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781060531880.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "갈릭난",
+        "팽이버섯장국1",
+        "치킨마크니커리",
+        "맛쵸킹탕수육",
+        "배추겉절이1",
+        "요구르트"
+      ],
+      "CAL_INFO": "865.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781074689241.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "대패삼겹살비빔밥",
+        "달걀실파국1",
+        "청포묵김가루무침1",
+        "배추김치1",
+        "콘크러스트 피자",
+        "스위트플럼주스"
+      ],
+      "CAL_INFO": "912.8 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781139777573.jpeg"
+    }
+  ],
+  "20260611": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥",
+        "참치김치찌개1",
+        "달걀후라이.",
+        "참나물무침1",
+        "싸먹는 오리훈제",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "포도",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "767.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781211896732.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "나물비빔밥&amp;약고추장",
+        "된장찌개1",
+        "게살크림고로케",
+        "갈릭버터 달고기스테이크",
+        "열무김치",
+        "라임&amp;레몬주스"
+      ],
+      "CAL_INFO": "665.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781193927745.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "귀리밥",
+        "들기름막국수",
+        "호박고추장찌개1",
+        "대파족발",
+        "배추겉절이1",
+        "피크닉"
+      ],
+      "CAL_INFO": "1242.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781193962465.jpeg"
+    }
+  ],
+  "20260612": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차수수밥",
+        "레인보우초코링도넛",
+        "쇠고기샤브샤브국",
+        "치킨텐더샐러드",
+        "삼치살카레구이",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1118.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781488181982.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "후리카케밥",
+        "베트남쌀국수",
+        "열대과일샐러드1",
+        "배추김치1",
+        "멘보샤&amp;칠리소스",
+        "납작복숭아허니그린티"
+      ],
+      "CAL_INFO": "988.5 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781237833994.jpeg"
+    }
+  ],
+  "20260615": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "돼지고기감자탕",
+        "샐러드파스타",
+        "치즈갈릭연어스테이크1",
+        "깍두기",
+        "짜먹는요거트"
+      ],
+      "CAL_INFO": "932.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781492882509.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "기장밥",
+        "육개장1",
+        "돈사태떡찜",
+        "사각어묵볶음1",
+        "배추김치1",
+        "초코 쿠키슈"
+      ],
+      "CAL_INFO": "915.1 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781511671650.jpg"
+    }
+  ],
+  "20260616": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥",
+        "조랭이떡국1",
+        "계란볶이",
+        "허브치킨플레로티1",
+        "배추김치1",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)",
+        "체리"
+      ],
+      "CAL_INFO": "925.6 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781587878394.jpeg"
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "현미밥",
+        "갈릭치즈크러스트피자",
+        "콩나물무침1",
+        "쭈꾸미볶음",
+        "총각김치",
+        "비타민음료",
+        "해물누룽지탕"
+      ],
+      "CAL_INFO": "711.4 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781597960017.jpg"
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "감자양파국1",
+        "콘버터치즈구이",
+        "유린기",
+        "석박지",
+        "마파두부소스",
+        "딸기우유1"
+      ],
+      "CAL_INFO": "1095.2 Kcal",
+      "IMG_PATH": "https://intec.icehs.kr/upload/foodlist/intec/1781598019376.jpg"
+    }
+  ],
+  "20260617": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "떠먹는유부초밥",
+        "부대찌개1",
+        "감자조림1",
+        "매콤떡갈새",
+        "총각김치",
+        "씨리얼(고)",
+        "토스트잼",
+        "요구르트",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1474.3 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "흑미밥",
+        "비빔국수1",
+        "호박고추장찌개1",
+        "수육1",
+        "배추겉절이1",
+        "수박"
+      ],
+      "CAL_INFO": "784.1 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "김치볶음밥",
+        "유부장국1",
+        "새송이버섯볶음1",
+        "백김치1",
+        "뉴욕칠리핫도그&amp;플리또"
+      ],
+      "CAL_INFO": "1390.4 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260618": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "귀리밥",
+        "맑은미역국1",
+        "닭살카레볶음",
+        "청경채무침",
+        "감자고로케",
+        "깍두기",
+        "마시는유산균",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "910.4 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "경상도식쇠고기무국1",
+        "오이양파무침1",
+        "궁중떡볶이",
+        "블럭치즈돈가스",
+        "스위트플럼주스"
+      ],
+      "CAL_INFO": "1081.7 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "쌀밥",
+        "쑥갓어묵국1",
+        "골뱅이소면무침1",
+        "삼겹살오븐구이",
+        "배추겉절이1",
+        "파인애플1"
+      ],
+      "CAL_INFO": "801.1 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260619": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "차수수밥",
+        "북어무채국1",
+        "스팸김치볶음",
+        "스크램블에그1",
+        "석박지",
+        "씨리얼(고)",
+        "토스트잼",
+        "베이비슈1",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "807.6 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "닭다리삼계탕",
+        "상추부추무침",
+        "고기완자전",
+        "배추겉절이1",
+        "수리취꿀떡"
+      ],
+      "CAL_INFO": "792.1 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260622": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "차수수밥",
+        "들기름막국수",
+        "쇠고기무국1",
+        "부추겨자무침",
+        "쭈삼불고기",
+        "배추김치1",
+        "망고스틴"
+      ],
+      "CAL_INFO": "1300.3 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "현미밥",
+        "마라탕",
+        "단무지부추무침1",
+        "굴소스청경채볶음",
+        "목화솜탕수육/",
+        "배추김치1",
+        "비타초코우유"
+      ],
+      "CAL_INFO": "1022.9 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260623": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "백미밥",
+        "차돌된장찌개",
+        "부대볶음",
+        "생선까스소스",
+        "깍두기",
+        "씨리얼(고)",
+        "토스트잼",
+        "마시는달콤한하루",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "972.2 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "야채볶음밥",
+        "꼬치어묵탕",
+        "찐순대1",
+        "잡채고로케",
+        "백김치1",
+        "쥬시쿨(복숭아)",
+        "까르보불닭떡볶이"
+      ],
+      "CAL_INFO": "1063.4 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "차수수밥",
+        "김치수제비국1",
+        "시금치프리타타",
+        "대파돈육오븐구이",
+        "깍두기",
+        "스위트제주청귤"
+      ],
+      "CAL_INFO": "959.5 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260624": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "귀리밥",
+        "물만두국",
+        "시금치무침1",
+        "찹스테이크",
+        "총각김치",
+        "딸기미니도넛",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "932.7 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "쇠고기버섯콩나물밥/양념장",
+        "바지락살순두부찌개",
+        "햄마늘쫑볶음1",
+        "수제잠발라야닭다리구이",
+        "총각김치",
+        "얼려먹는야쿠르트샤인머스캣"
+      ],
+      "CAL_INFO": "867.2 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "쌀밥",
+        "돈육김치찌개1",
+        "비름나물 무침",
+        "비엔나케찹볶음(부)1",
+        "삼치살데리야끼구이1",
+        "석박지",
+        "떠먹는 아이스슈"
+      ],
+      "CAL_INFO": "957.6 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260625": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "혼합잡곡밥",
+        "두부김치국",
+        "야채계란찜",
+        "소고기당면불고기",
+        "석박지",
+        "씨리얼(고)",
+        "토스트잼",
+        "자몽허니블랙티",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "934.2 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "차수수밥",
+        "북어콩나물국1",
+        "묵은지사태찜",
+        "굴소스볼어묵볶음",
+        "석박지",
+        "수박"
+      ],
+      "CAL_INFO": "896.6 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "귀리밥",
+        "나가사끼짬뽕국",
+        "뿌링소스감자튀김",
+        "바비큐폭립",
+        "배추김치1",
+        "카프리썬"
+      ],
+      "CAL_INFO": "1120.1 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260626": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "오므라이스",
+        "팽이버섯장국1",
+        "명엽채볶음",
+        "비엔나케찹볶음(부)1",
+        "깍두기",
+        "바나나우유",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "1122.2 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "연포탕",
+        "동파육",
+        "실곤약야채무침1",
+        "석박지",
+        "납작복숭아허니그린티"
+      ],
+      "CAL_INFO": "723.9 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260629": [
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "흑미밥",
+        "북어무채국1",
+        "분모자로제찜닭",
+        "취나물무침1",
+        "모짜치즈볼/뿌링소스",
+        "백김치1",
+        "스위트제주청귤"
+      ],
+      "CAL_INFO": "837.0 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "현미밥",
+        "미니우동1",
+        "열대과일샐러드1",
+        "야채피클1",
+        "슈프림양념치킨",
+        "배추겉절이1",
+        "피크닉"
+      ],
+      "CAL_INFO": "1084.9 Kcal",
+      "IMG_PATH": null
+    }
+  ],
+  "20260630": [
+    {
+      "MMEAL_SC_NM": "조식",
+      "DDISH_NM": [
+        "보리밥",
+        "순두부맑은국",
+        "느타리들깨무침(건강식단2)",
+        "오징어볶음1",
+        "육원전",
+        "배추김치1",
+        "마시는 파인한 자몽",
+        "씨리얼(고)",
+        "토스트잼",
+        "흰우유(고)"
+      ],
+      "CAL_INFO": "830.4 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "중식",
+      "DDISH_NM": [
+        "친환경칼슘찹쌀밥",
+        "짬뽕국1",
+        "이슬만두",
+        "단무지부추무침1",
+        "레몬크림새우",
+        "비타민음료"
+      ],
+      "CAL_INFO": "609.3 Kcal",
+      "IMG_PATH": null
+    },
+    {
+      "MMEAL_SC_NM": "석식",
+      "DDISH_NM": [
+        "기장밥",
+        "맑은콩나물국1",
+        "제육볶음",
+        "두부가라아케",
+        "깍두기",
+        "초코 쿠키슈"
+      ],
+      "CAL_INFO": "954.8 Kcal",
+      "IMG_PATH": null
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+/* ══════════════════════════════════════════
+   InquiryModal / AdminPanel 추가 스타일
+   ══════════════════════════════════════════ */
+
+.lm-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 0.84rem;
+  color: var(--text-primary);
+  outline: none;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color .18s, background .18s, box-shadow .18s;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+.lm-textarea:focus {
+  background: rgba(255,255,255,0.07);
+  border-color: var(--tab-active-bg);
+  box-shadow: 0 0 0 3px rgba(99,149,230,0.15);
+}
+.lm-textarea::placeholder { color: var(--text-secondary); opacity: .35; }
+.lm-textarea:disabled { opacity: .4; cursor: not-allowed; }
+
+.lm-hint {
+  font-size: .72rem;
+  color: var(--text-secondary);
+  opacity: .6;
+  margin-top: 4px;
+}
+
+/* 필터 핀 */
+.lm-filter-pill {
+  padding: 5px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+  font-size: .76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+.lm-filter-pill.active {
+  background: var(--tab-active-bg);
+  border-color: var(--tab-active-bg);
+  color: #fff;
+}
+.lm-filter-pill:hover:not(.active) {
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* 카운트 뱃지 */
+.lm-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.1);
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+.lm-count-badge.unread {
+  background: rgba(231,76,60,0.18);
+  color: #e76b5f;
+}
+
+/* 미확인 표시 점 */
+.lm-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e74c3c;
+  flex-shrink: 0;
+  box-shadow: 0 0 5px rgba(231,76,60,.6);
+}
+
+/* 위험(삭제) 버튼 */
+.lm-btn--danger {
+  background: transparent;
+  border: 1px solid rgba(231,76,60,0.4);
+  color: #e76b5f;
+  flex: none;
+}
+.lm-btn--danger:hover:not(:disabled) {
+  background: rgba(231,76,60,0.1);
+  border-color: #e76b5f;
+}
+
+/* 라이트모드 보정 */
+body.light-mode .lm-textarea {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.12);
+  color: #111;
+}
+body.light-mode .lm-textarea:focus {
+  background: #fff;
+}
+body.light-mode .lm-filter-pill {
+  border-color: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.03);
+}
+body.light-mode .lm-count-badge {
+  background: rgba(0,0,0,0.08);
+}
