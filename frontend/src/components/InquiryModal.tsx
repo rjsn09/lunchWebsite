@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { postInquiry } from "../api";
 
 interface Props {
@@ -13,24 +13,17 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       setSubject(""); setMessage(""); setLoading(false);
-      requestAnimationFrame(() => {
-        setMounted(true);
-        setTimeout(() => textareaRef.current?.focus(), 120);
-      });
+      requestAnimationFrame(() => setMounted(true));
     } else {
       setMounted(false);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
-
-  const trimmedLen = message.trim().length;
-  const nearLimit = message.length > 1800;
 
   async function handleSubmit() {
     if (!message.trim()) {
@@ -39,7 +32,7 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
     }
     setLoading(true);
     try {
-      await postInquiry(userId || "익명", subject.trim(), message.trim());
+      await postInquiry(userId || "익명", subject, message);
       onToast("문의가 접수되었습니다! 빠르게 답변드리겠습니다. 📩");
       onClose();
     } catch (e: any) {
@@ -56,7 +49,7 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
     >
       <div
         className={`lm-card${mounted ? " lm-card--in" : ""}`}
-        style={{ maxWidth: 480, width: "92vw" }}
+        style={{ maxWidth: 440 }}
         onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}
       >
         {/* 헤더 */}
@@ -72,7 +65,7 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
           </button>
         </div>
 
-        <div className="lm-form" style={{ padding: "20px 22px 6px", gap: 16 }}>
+        <div className="lm-form" style={{ padding: "0 20px 4px" }}>
           {/* 보내는 사람 */}
           <div className="lm-field">
             <label className="lm-label">보내는 사람</label>
@@ -88,14 +81,11 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
                 style={{ opacity: 0.6 }}
               />
             </div>
-            {!userId && (
-              <div className="lm-hint">로그인하지 않으면 익명으로 접수됩니다.</div>
-            )}
           </div>
 
           {/* 제목 */}
           <div className="lm-field">
-            <label className="lm-label">제목 <span style={{ opacity: 0.5, fontWeight: 500 }}>(선택)</span></label>
+            <label className="lm-label">제목 (선택)</label>
             <div className="lm-input-wrap">
               <svg className="lm-input-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" strokeWidth="2" fill="none">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/>
@@ -114,28 +104,29 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
 
           {/* 내용 */}
           <div className="lm-field">
-            <label className="lm-label">
-              문의 내용 <span style={{ color: "#ff8c42" }}>*</span>
-            </label>
+            <label className="lm-label">문의 내용 <span style={{ color: "#ff8c42" }}>*</span></label>
             <textarea
-              ref={textareaRef}
-              className="lm-textarea"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="문의 내용을 자세히 작성해주세요. 어떤 화면에서, 어떤 문제가 있었는지 적어주시면 더 빠르게 도와드릴 수 있어요."
+              placeholder="문의 내용을 자세히 작성해주세요."
               maxLength={2000}
               disabled={loading}
-              rows={7}
-            />
-            <div
+              rows={5}
               style={{
-                textAlign: "right",
-                fontSize: 11,
-                color: nearLimit ? "#e76b5f" : "var(--text-secondary)",
+                width: "100%",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: 8,
+                padding: "10px 12px",
+                fontSize: 13,
+                color: "var(--text-primary)",
+                outline: "none",
+                fontFamily: "inherit",
+                resize: "vertical",
                 marginTop: 4,
-                opacity: nearLimit ? 1 : 0.6,
               }}
-            >
+            />
+            <div style={{ textAlign: "right", fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
               {message.length} / 2000
             </div>
           </div>
@@ -145,11 +136,7 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
           <button className="lm-btn lm-btn--ghost" onClick={onClose} disabled={loading}>
             취소
           </button>
-          <button
-            className="lm-btn lm-btn--primary"
-            onClick={handleSubmit}
-            disabled={loading || trimmedLen === 0}
-          >
+          <button className="lm-btn lm-btn--primary" onClick={handleSubmit} disabled={loading}>
             {loading ? <span className="lm-spinner" /> : "제출"}
           </button>
         </div>

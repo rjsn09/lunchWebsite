@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchInquiries, markInquiryRead, deleteInquiry } from "../api";
+import { fetchInquiries } from "../api";
 import type { InquiryItem } from "../types";
 
 interface Props {
@@ -9,15 +9,11 @@ interface Props {
   onToast: (msg: string, isError?: boolean) => void;
 }
 
-type Filter = "all" | "unread";
-
 export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Props) {
   const [inquiries, setInquiries] = useState<InquiryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [expandedId, setExpandedId] = useState<string | number | null>(null);
-  const [filter, setFilter] = useState<Filter>("all");
-  const [pendingIds, setPendingIds] = useState<Set<string | number>>(new Set());
 
   useEffect(() => {
     if (isOpen) {
@@ -27,7 +23,6 @@ export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Pr
       setMounted(false);
       setInquiries([]);
       setExpandedId(null);
-      setFilter("all");
     }
   }, [isOpen]);
 
@@ -50,45 +45,6 @@ export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Pr
     return iso.replace("T", " ").slice(0, 16);
   }
 
-  function withPending<T>(id: string | number, fn: () => Promise<T>) {
-    setPendingIds((prev) => new Set(prev).add(id));
-    return fn().finally(() => {
-      setPendingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    });
-  }
-
-  async function handleToggleRead(item: InquiryItem) {
-    const nextRead = !item.is_read;
-    try {
-      await withPending(item.id, () => markInquiryRead(item.id, adminUserId, nextRead));
-      setInquiries((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, is_read: nextRead } : i))
-      );
-    } catch (e: any) {
-      onToast(e.message || "상태 변경에 실패했습니다.", true);
-    }
-  }
-
-  async function handleDelete(item: InquiryItem) {
-    const ok = window.confirm("이 문의를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
-    if (!ok) return;
-    try {
-      await withPending(item.id, () => deleteInquiry(item.id, adminUserId));
-      setInquiries((prev) => prev.filter((i) => i.id !== item.id));
-      if (expandedId === item.id) setExpandedId(null);
-      onToast("문의가 삭제되었습니다.");
-    } catch (e: any) {
-      onToast(e.message || "삭제에 실패했습니다.", true);
-    }
-  }
-
-  const unreadCount = inquiries.filter((i) => i.is_read === false).length;
-  const visible = filter === "unread" ? inquiries.filter((i) => i.is_read === false) : inquiries;
-
   return (
     <div
       className={`lm-backdrop${mounted ? " lm-backdrop--in" : ""}`}
@@ -96,7 +52,7 @@ export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Pr
     >
       <div
         className={`lm-card${mounted ? " lm-card--in" : ""}`}
-        style={{ maxWidth: 760, width: "95vw" }}
+        style={{ maxWidth: 560, width: "95vw" }}
         onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}
       >
         {/* 헤더 */}
@@ -104,10 +60,6 @@ export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Pr
           <div className="lm-logo">
             <span className="lm-logo-dot" style={{ background: "#e74c3c" }} />
             <span className="lm-logo-text">관리자 — 문의 목록</span>
-            <span className="lm-count-badge">{inquiries.length}</span>
-            {unreadCount > 0 && (
-              <span className="lm-count-badge unread">미확인 {unreadCount}</span>
-            )}
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <button
@@ -134,141 +86,90 @@ export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Pr
           </div>
         </div>
 
-        {/* 필터 */}
-        <div style={{ display: "flex", gap: 8, padding: "14px 20px 0" }}>
-          <button
-            className={`lm-filter-pill${filter === "all" ? " active" : ""}`}
-            onClick={() => setFilter("all")}
-          >
-            전체
-          </button>
-          <button
-            className={`lm-filter-pill${filter === "unread" ? " active" : ""}`}
-            onClick={() => setFilter("unread")}
-          >
-            미확인만
-          </button>
-        </div>
-
         {/* 문의 목록 */}
         <div
           style={{
-            maxHeight: "62vh",
+            maxHeight: "60vh",
             overflowY: "auto",
-            padding: "12px 20px 16px",
-            marginTop: 4,
+            padding: "8px 20px 16px",
           }}
         >
           {loading ? (
-            <div style={{ textAlign: "center", padding: 48, color: "var(--text-secondary)", fontSize: 14 }}>
+            <div style={{ textAlign: "center", padding: 40, color: "var(--text-secondary)", fontSize: 14 }}>
               불러오는 중…
             </div>
-          ) : visible.length === 0 ? (
-            <div style={{ textAlign: "center", padding: 48, color: "var(--text-secondary)", fontSize: 14 }}>
-              {filter === "unread" ? "미확인 문의가 없습니다." : "접수된 문의가 없습니다."}
+          ) : inquiries.length === 0 ? (
+            <div style={{ textAlign: "center", padding: 40, color: "var(--text-secondary)", fontSize: 14 }}>
+              접수된 문의가 없습니다.
             </div>
           ) : (
-            visible.map((item) => {
-              const isPending = pendingIds.has(item.id);
-              const isUnread = item.is_read === false;
-              const isExpanded = expandedId === item.id;
-
-              return (
+            inquiries.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  borderBottom: "1px solid rgba(255,255,255,0.07)",
+                  paddingBottom: 12,
+                  marginBottom: 12,
+                }}
+              >
+                {/* 요약행 */}
                 <div
-                  key={item.id}
                   style={{
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    borderRadius: 10,
-                    padding: "12px 14px",
-                    marginBottom: 10,
-                    background: isUnread ? "rgba(231,76,60,0.05)" : "transparent",
-                    transition: "background .15s",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: 8,
+                    cursor: "pointer",
                   }}
+                  onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
                 >
-                  {/* 요약행 */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontWeight: 700,
+                      fontSize: 14,
+                      color: "var(--text-primary)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}>
+                      {item.subject || "(제목 없음)"}
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
+                      <span style={{ color: "#ff8c42", fontWeight: 600 }}>{item.user_id}</span>
+                      &nbsp;·&nbsp;{formatDate(item.created_at)}
+                    </div>
+                  </div>
+                  <span style={{
+                    fontSize: 11,
+                    color: "var(--text-secondary)",
+                    flexShrink: 0,
+                    marginTop: 2,
+                  }}>
+                    {expandedId === item.id ? "▲" : "▼"}
+                  </span>
+                </div>
+
+                {/* 펼쳐진 내용 */}
+                {expandedId === item.id && (
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      gap: 10,
-                      cursor: "pointer",
+                      marginTop: 10,
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 8,
+                      padding: "10px 14px",
+                      fontSize: 13,
+                      color: "var(--text-primary)",
+                      lineHeight: 1.6,
+                      whiteSpace: "pre-wrap",
+                      wordBreak: "break-word",
                     }}
-                    onClick={() => setExpandedId(isExpanded ? null : item.id)}
                   >
-                    <div style={{ display: "flex", gap: 8, flex: 1, minWidth: 0, alignItems: "flex-start" }}>
-                      {isUnread && <span className="lm-unread-dot" style={{ marginTop: 5 }} />}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontWeight: 700,
-                          fontSize: 14,
-                          color: "var(--text-primary)",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}>
-                          {item.subject || "(제목 없음)"}
-                        </div>
-                        <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
-                          <span style={{ color: "#ff8c42", fontWeight: 600 }}>{item.user_id}</span>
-                          &nbsp;·&nbsp;{formatDate(item.created_at)}
-                        </div>
-                      </div>
-                    </div>
-                    <span style={{
-                      fontSize: 11,
-                      color: "var(--text-secondary)",
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}>
-                      {isExpanded ? "▲" : "▼"}
-                    </span>
+                    {item.message}
                   </div>
-
-                  {/* 펼쳐진 내용 */}
-                  {isExpanded && (
-                    <>
-                      <div
-                        style={{
-                          marginTop: 10,
-                          background: "rgba(255,255,255,0.04)",
-                          border: "1px solid rgba(255,255,255,0.08)",
-                          borderRadius: 8,
-                          padding: "10px 14px",
-                          fontSize: 13,
-                          color: "var(--text-primary)",
-                          lineHeight: 1.6,
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {item.message}
-                      </div>
-
-                      {/* 액션 행 */}
-                      <div style={{ display: "flex", gap: 8, marginTop: 10, justifyContent: "flex-end" }}>
-                        <button
-                          className="lm-btn lm-btn--ghost"
-                          style={{ flex: "none", padding: "6px 14px", fontSize: 12 }}
-                          disabled={isPending}
-                          onClick={() => handleToggleRead(item)}
-                        >
-                          {isPending ? "…" : isUnread ? "읽음으로 표시" : "안읽음으로 표시"}
-                        </button>
-                        <button
-                          className="lm-btn lm-btn--danger"
-                          style={{ flex: "none", padding: "6px 14px", fontSize: 12 }}
-                          disabled={isPending}
-                          onClick={() => handleDelete(item)}
-                        >
-                          {isPending ? "…" : "삭제"}
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })
+                )}
+              </div>
+            ))
           )}
         </div>
 

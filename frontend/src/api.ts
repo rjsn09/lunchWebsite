@@ -26,6 +26,30 @@ export async function postRating(
   return res.json();
 }
 
+// ── 문의하기 ──────────────────────────────────────────
+export async function postInquiry(
+  userId: string,
+  subject: string,
+  message: string
+): Promise<{ ok: boolean; message: string }> {
+  const res = await fetch("/api/inquiry", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userId, subject, message }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "문의 제출 실패");
+  return data;
+}
+
+// ── 관리자: 문의 목록 ─────────────────────────────────
+export async function fetchInquiries(adminUserId: string): Promise<InquiryItem[]> {
+  const res = await fetch(`/api/admin/inquiries?admin_user_id=${encodeURIComponent(adminUserId)}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || "문의 목록 로드 실패");
+  return data;
+}
+
 // ── 관리자: 리뷰 수정 ─────────────────────────────────
 export async function adminEditReview(
   reviewId: string | number,
@@ -54,48 +78,5 @@ export async function adminDeleteReview(
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.detail || "삭제 실패");
-  return data;
-}
-
-export async function postInquiry(userId: string, subject: string, message: string) {
-  const res = await fetch("/api/inquiries", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user_id: userId, subject, message }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || "문의 제출에 실패했습니다.");
-  return data;
-}
-
-export async function fetchInquiries(adminUserId: string): Promise<InquiryItem[]> {
-  const res = await fetch(`/api/inquiries?admin_user_id=${encodeURIComponent(adminUserId)}`);
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || "문의 목록을 불러오지 못했습니다.");
-  return data;
-}
-
-export async function markInquiryRead(
-  id: string | number,
-  adminUserId: string,
-  isRead: boolean
-) {
-  const res = await fetch(`/api/inquiries/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ admin_user_id: adminUserId, is_read: isRead }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || "상태 변경에 실패했습니다.");
-  return data;
-}
-
-export async function deleteInquiry(id: string | number, adminUserId: string) {
-  const res = await fetch(
-    `/api/inquiries/${id}?admin_user_id=${encodeURIComponent(adminUserId)}`,
-    { method: "DELETE" }
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || "삭제에 실패했습니다.");
   return data;
 }
