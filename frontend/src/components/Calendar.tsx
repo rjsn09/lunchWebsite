@@ -1,10 +1,16 @@
 import React from "react";
+import type { ScheduleData } from "../types";
 
 interface CalendarProps {
   viewDate: Date;
   onDateSelect: (date: Date) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  schedule?: ScheduleData;
+}
+
+function toDateStr(year: number, month: number, day: number): string {
+  return `${year}${String(month + 1).padStart(2, "0")}${String(day).padStart(2, "0")}`;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -12,6 +18,7 @@ const Calendar: React.FC<CalendarProps> = ({
   onDateSelect,
   onPrevMonth,
   onNextMonth,
+  schedule = {},
 }) => {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -57,17 +64,27 @@ const Calendar: React.FC<CalendarProps> = ({
         <tbody>
           {rows.map((row, ri) => (
             <tr key={ri}>
-              {row.map((day, ci) => (
-                <td
-                  key={ci}
-                  className={day === selectedDate ? "selected" : ""}
-                  onClick={() => {
-                    if (day) onDateSelect(new Date(year, month, day));
-                  }}
-                >
-                  {day ?? ""}
-                </td>
-              ))}
+              {row.map((day, ci) => {
+                const entry = day ? schedule[toDateStr(year, month, day)] : undefined;
+                const isHoliday = entry ? entry[0] === 0 : false;
+                const reason = entry?.[1];
+
+                return (
+                  <td
+                    key={ci}
+                    className={`${day === selectedDate ? "selected" : ""}${isHoliday ? " holiday" : ""}`}
+                    title={reason || undefined}
+                    onClick={() => {
+                      if (day) onDateSelect(new Date(year, month, day));
+                    }}
+                  >
+                    {day ?? ""}
+                    {isHoliday && reason && (
+                      <span className="holiday-label">{reason}</span>
+                    )}
+                  </td>
+                );
+              })}
               {row.length < 7 &&
                 Array.from({ length: 7 - row.length }).map((_, i) => (
                   <td key={`empty-${i}`} />

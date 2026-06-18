@@ -8,12 +8,13 @@ interface MealDetailProps {
   mealType: MealType;
   score: number;
   onMealTypeChange: (t: MealType) => void;
+  scheduleReason?: string; // 학사일정상 쉬는 날일 경우 그 사유 (예: "동계방학", "설날")
 }
 
 const MEAL_TYPES: MealType[] = ["조식", "중식", "석식"];
 
 const MealDetail: React.FC<MealDetailProps> = ({
-  viewDate, meals, mealType, score, onMealTypeChange,
+  viewDate, meals, mealType, score, onMealTypeChange, scheduleReason,
 }) => {
   const y = viewDate.getFullYear();
   const m = String(viewDate.getMonth() + 1).padStart(2, "0");
@@ -29,16 +30,23 @@ const MealDetail: React.FC<MealDetailProps> = ({
     setImgLoaded(false);
     setImgError(false);
     if (!targetMeal?.IMG_PATH) {
-      setNoPhotoText("해당 급식의 사진을 찾을 수 없습니다.");
+      setNoPhotoText(
+        scheduleReason
+          ? `${scheduleReason}으로 급식이 없습니다.`
+          : "해당 급식의 사진을 찾을 수 없습니다."
+      );
     } else {
       setNoPhotoText("사진을 불러오는 중...");
     }
-  }, [targetMeal?.IMG_PATH, mealType, viewDate]);
+  }, [targetMeal?.IMG_PATH, mealType, viewDate, scheduleReason]);
 
   return (
     <section className="panel middle-panel">
       <div className="middle-panel-header" id="selectedDateHeader">
         {y}년 {m}월 {d}일 급식 정보
+        {scheduleReason && (
+          <span className="schedule-reason-badge">{scheduleReason}</span>
+        )}
       </div>
 
       <div className="meal-tabs" id="mealTabs">
@@ -110,7 +118,9 @@ const MealDetail: React.FC<MealDetailProps> = ({
             ) : (
               <tr>
                 <td style={{ padding: "20px", textAlign: "center", color: "var(--text-secondary)" }}>
-                  해당 날짜에 {mealType} 데이터가 없습니다.
+                  {scheduleReason
+                    ? `${scheduleReason}으로 인해 급식이 제공되지 않는 날입니다.`
+                    : `해당 날짜에 ${mealType} 데이터가 없습니다.`}
                 </td>
               </tr>
             )}

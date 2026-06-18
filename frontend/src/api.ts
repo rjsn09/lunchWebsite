@@ -1,8 +1,15 @@
-import type { MealData, RatingsData, InquiryItem } from "./types";
+import type { MealData, RatingsData, InquiryItem, ScheduleData } from "./types";
 
 export async function fetchMeals(): Promise<MealData> {
   const res = await fetch("/api/meals");
   if (!res.ok) throw new Error("식단 데이터 로드 실패");
+  return res.json();
+}
+
+// ── 학사일정 ──────────────────────────────────────────
+export async function fetchSchedule(): Promise<ScheduleData> {
+  const res = await fetch("/api/schedule");
+  if (!res.ok) throw new Error("학사일정 데이터 로드 실패");
   return res.json();
 }
 

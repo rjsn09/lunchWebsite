@@ -25,3 +25,7 @@ export interface InquiryItem {
   message: string;
   created_at: string;
 }
+
+export type ScheduleEntry = [number, string];
+
+export type ScheduleData = Record<string, ScheduleEntry>; // { "20260101": [0, "신정"] }

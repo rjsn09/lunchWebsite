@@ -710,3 +710,41 @@ body.light-mode .toast-notification {
   background: #333;
   color: #fff;
 }
+
+/* 달력에서 휴업일/공휴일 셀 표시 */
+.calendar-table td.holiday {
+  position: relative;
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.08);
+}
+
+.calendar-table td.holiday.selected {
+  background: rgba(231, 76, 60, 0.2);
+}
+
+/* 날짜 아래에 작게 표시되는 사유 라벨 (예: "동계방학", "설날") */
+.calendar-table .holiday-label {
+  display: block;
+  font-size: 0.55rem;
+  line-height: 1;
+  margin-top: 2px;
+  color: #e74c3c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* 급식 상세 헤더에 표시되는 휴업일 사유 배지 */
+.schedule-reason-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  border-radius: 999px;
+  vertical-align: middle;
+}
