@@ -304,8 +304,9 @@ export default function App() {
       <InquiryModal
         isOpen={inquiryOpen}
         onClose={() => setInquiryOpen(false)}
-        userId={auth.loggedIn ? auth.username : ""}
+        userId={auth.username}
         onToast={showToast}
+        onRequireLogin={() => setLoginOpen(true)}
       />
 
       {/* 관리자 문의 패널 ← 추가 */}

@@ -6,9 +6,10 @@ interface Props {
   onClose: () => void;
   userId: string;   // 로그인한 경우 user_id, 아니면 ""
   onToast: (msg: string, isError?: boolean) => void;
+  onRequireLogin: () => void; // ✅ 로그인 모달을 띄우기 위한 함수 추가
 }
 
-export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props) {
+export default function InquiryModal({ isOpen, onClose, userId, onToast, onRequireLogin }: Props) {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,13 +27,23 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
   if (!isOpen) return null;
 
   async function handleSubmit() {
+    // ✅ 1. 로그인 여부 확인
+    if (!userId) {
+      onToast("로그인이 필요한 기능입니다.", true);
+      onClose(); // 문의 모달 닫기
+      onRequireLogin(); // 로그인 모달 열기
+      return;
+    }
+
+    // 2. 내용 확인
     if (!message.trim()) {
       onToast("문의 내용을 입력해주세요.", true);
       return;
     }
+
     setLoading(true);
     try {
-      await postInquiry(userId || "익명", subject, message);
+      await postInquiry(userId, subject, message); // 이제 무조건 userId가 들어갑니다
       onToast("문의가 접수되었습니다! 빠르게 답변드리겠습니다. 📩");
       onClose();
     } catch (e: any) {
@@ -76,9 +87,9 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
               <input
                 type="text"
                 className="lm-input"
-                value={userId || "익명"}
+                value={userId || "로그인이 필요합니다"} // ✅ 문구 변경
                 disabled
-                style={{ opacity: 0.6 }}
+                style={{ opacity: 0.6, color: !userId ? "#e74c3c" : "inherit" }} // 비로그인 시 글자색 변경
               />
             </div>
           </div>
@@ -97,7 +108,7 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="문의 제목을 입력하세요"
                 maxLength={100}
-                disabled={loading}
+                disabled={loading || !userId} // ✅ 비로그인 시 입력 불가
               />
             </div>
           </div>
@@ -108,9 +119,9 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="문의 내용을 자세히 작성해주세요."
+              placeholder={userId ? "문의 내용을 자세히 작성해주세요." : "로그인 후 작성하실 수 있습니다."} // ✅ 문구 변경
               maxLength={2000}
-              disabled={loading}
+              disabled={loading || !userId} // ✅ 비로그인 시 입력 불가
               rows={5}
               style={{
                 width: "100%",
@@ -124,6 +135,7 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
                 fontFamily: "inherit",
                 resize: "vertical",
                 marginTop: 4,
+                cursor: !userId ? "not-allowed" : "text"
               }}
             />
             <div style={{ textAlign: "right", fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
@@ -136,8 +148,13 @@ export default function InquiryModal({ isOpen, onClose, userId, onToast }: Props
           <button className="lm-btn lm-btn--ghost" onClick={onClose} disabled={loading}>
             취소
           </button>
-          <button className="lm-btn lm-btn--primary" onClick={handleSubmit} disabled={loading}>
-            {loading ? <span className="lm-spinner" /> : "제출"}
+          <button 
+            className="lm-btn lm-btn--primary" 
+            onClick={handleSubmit} 
+            disabled={loading}
+          >
+            {/* ✅ 버튼 텍스트 동적 변경 */}
+            {loading ? <span className="lm-spinner" /> : (!userId ? "로그인하기" : "제출")}
           </button>
         </div>
       </div>
