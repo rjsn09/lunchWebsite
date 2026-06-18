@@ -445,6 +445,26 @@ async def get_inquiries(admin_user_id: str):
             for r in res.json()
         ]
 
+@app.get("/api/schedule")
+async def get_schedule():
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/school_schedule",
+            headers=get_sb_headers(),
+            params={"select": "date,schedule", "limit": 1000}
+        )
+        
+        if res.status_code != 200:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+
+        result = {}
+        for row in res.json():
+            date = row["date"]
+            schedule_text = row["schedule"]
+            
+            result[date] = [0, schedule_text]
+            
+        return result
 
 if __name__ == "__main__":
     import uvicorn

@@ -14,14 +14,17 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
+# ── 1. 급식 데이터 업로드 ──────────────────────────────────────────
 async def upload_meal_data():
-    with open('data/data/meal_data.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open('data/data/meal_data.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print("[INFO] meal_data.json 파일이 없어 급식 업로드를 건너뜁니다.")
+        return
 
     async with httpx.AsyncClient() as client:
         for date, meals in data.items():
-            print(date, meal_type)
-            
             for meal in meals:
                 meal_type = meal["MMEAL_SC_NM"]
                 
@@ -47,7 +50,6 @@ async def upload_meal_data():
                 
                 if res_meal.status_code not in [200, 201]:
                     try:
-                        # 문자열을 JSON 딕셔너리로 변환
                         error_json = res_meal.json()
                         error_code = error_json.get("code")
                         
@@ -85,7 +87,51 @@ async def upload_meal_data():
                     if res_dish.status_code not in [200, 201]:
                         print(f"DDISH_NM 저장 실패 ({date} {meal_type}): {res_dish.text}")
 
-        print("완료")
+        print("급식 데이터 업로드 완료")
+
+# ── 2. 학사일정 데이터 업로드 ──────────────────────────────────────
+async def upload_schedule_data():
+    try:
+        with open('data/data/school_schedule.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print("[INFO] school_schedule.json 파일이 없어 학사일정 업로드를 건너뜁니다.")
+        return
+
+    async with httpx.AsyncClient() as client:
+        schedule_rows = []
+        for date_key, info in data.items():
+            schedule_text = info[1]
+            
+            if schedule_text.strip() != "":
+                schedule_rows.append({
+                    "date": date_key,
+                    "schedule": schedule_text
+                })
+        
+        if not schedule_rows:
+            print("업로드할 학사일정이 없습니다.")
+            return
+
+        headers_schedule = {**HEADERS, "Prefer": "return=minimal, resolution=ignore"}
+        
+        res = await client.post(
+            f"{SUPABASE_URL}/rest/v1/school_schedule",
+            headers=headers_schedule,
+            json=schedule_rows
+        )
+        
+        if res.status_code not in [200, 201]:
+            print(f"학사일정 저장 실패: {res.text}")
+        else:
+            print(f"학사일정 업로드 완료 (총 {len(schedule_rows)}건)")
+
+# ── 메인 실행부 ────────────────────────────────────────────────
+async def main():
+    print("--- 데이터 업로드 시작 ---")
+    await upload_meal_data()
+    await upload_schedule_data()
+    print("--- 데이터 업로드 종료 ---")
 
 if __name__ == "__main__":
-    asyncio.run(upload_meal_data())
+    asyncio.run(main())
