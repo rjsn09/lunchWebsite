@@ -78,6 +78,9 @@ const RatingModal: React.FC<RatingModalProps> = ({
         <button className="modal-close-btn" onClick={onClose}>✕</button>
         <h2 id="modalTitle">{title}</h2>
         <p className="rating-subtitle" id="modalSubtitle">{subtitle}</p>
+        <p style={{ fontSize: 11, color: "var(--text-secondary)", opacity: 0.65, margin: "-6px 0 8px" }}>
+          {initialScore > 0 ? "내가 남긴 별점이에요. 다시 선택하면 수정됩니다." : "아직 별점을 남기지 않았어요."}
+        </p>
 
         <div
           className="star-box"

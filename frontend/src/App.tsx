@@ -7,13 +7,11 @@ import ReviewPanel from "./components/ReviewPanel";
 import LoginModal from "./components/LoginModal";
 import InquiryModal from "./components/InquiryModal";
 import AdminPanel from "./components/AdminPanel";
-// @ts-ignore
-import ScheduleModal from "./components/ScheduleModal";
 import { useToast } from "./components/useToast";
-import { fetchMeals, fetchRatings, postRating, fetchSchedule } from "./api";
-import type { MealData, MealType, RatingsData, ScheduleData } from "./types";
+import { fetchMeals, fetchRatings, fetchMyRatings, postRating } from "./api";
+import type { MealData, MealType, RatingsData } from "./types";
 // @ts-ignore
-import { Sun, Moon, LogIn, LogOut, User, MessageSquare, ShieldCheck, CalendarDays } from "lucide-react";
+import { Sun, Moon, LogIn, LogOut, User, MessageSquare, ShieldCheck } from "lucide-react";
 
 function toDateStr(d: Date): string {
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
@@ -46,7 +44,7 @@ function saveAuth(auth: AuthState) {
 export default function App() {
   const [allMealData, setAllMealData] = useState<MealData>({});
   const [ratings, setRatings] = useState<RatingsData>({});
-  const [schedule, setSchedule] = useState<ScheduleData>({});
+  const [myRatings, setMyRatings] = useState<RatingsData>({});
   const [currentViewDate, setCurrentViewDate] = useState<Date>(new Date());
   const [currentMealType, setCurrentMealType] = useState<MealType>("조식");
   const [currentWeeklyMealType, setCurrentWeeklyMealType] = useState<MealType>("조식");
@@ -56,11 +54,10 @@ export default function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [inquiryOpen, setInquiryOpen] = useState(false);   // ← 추가
   const [adminOpen, setAdminOpen] = useState(false);        // ← 추가
-  const [scheduleOpen, setScheduleOpen] = useState(false);  // ← 추가
   const [auth, setAuth] = useState<AuthState>(loadAuth);
   const { toast, showToast } = useToast();
 
-  // ── 식단 & 별점 & 학사일정 로드 ───────────────────────────
+  // ── 식단 & 별점 로드 ──────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
@@ -75,12 +72,6 @@ export default function App() {
       } catch (e) {
         console.warn("ratings 로드 실패:", e);
       }
-      try {
-        const s = await fetchSchedule();
-        setSchedule(s);
-      } catch (e) {
-        console.warn("학사일정 데이터 로드 실패:", e);
-      }
     })();
   }, []);
 
@@ -89,17 +80,29 @@ export default function App() {
     document.body.classList.toggle("light-mode", isLightMode);
   }, [isLightMode]);
 
+  // ── 내가 남긴 별점 로드 (로그인 상태 바뀔 때마다) ─────────
+  useEffect(() => {
+    if (!auth.loggedIn) {
+      setMyRatings({});
+      return;
+    }
+    (async () => {
+      try {
+        const r = await fetchMyRatings(auth.username);
+        setMyRatings(r);
+      } catch (e) {
+        console.warn("내 별점 로드 실패:", e);
+      }
+    })();
+  }, [auth.loggedIn, auth.username]);
+
   // ── 유도 데이터 ───────────────────────────────────────────
   const dateStr = toDateStr(currentViewDate);
   const mealsToday = allMealData[dateStr] || [];
   const score = ratings?.[dateStr]?.[currentMealType] ?? 0;
+  const myScore = myRatings?.[dateStr]?.[currentMealType] ?? 0;
   const m = String(currentViewDate.getMonth() + 1).padStart(2, "0");
   const d = String(currentViewDate.getDate()).padStart(2, "0");
-
-  // 학사일정상 쉬는 날인 경우에만 사유를 전달 (정상 등교일이면 undefined)
-  const scheduleEntry = schedule[dateStr];
-  const scheduleReason =
-    scheduleEntry && scheduleEntry[0] === 0 ? scheduleEntry[1] : undefined;
 
   // ── 핸들러 ────────────────────────────────────────────────
   const handlePrevMonth = useCallback(() => {
@@ -124,12 +127,22 @@ export default function App() {
   }, []);
 
   async function handleConfirmRating(s: number) {
+    if (!auth.loggedIn) {
+      showToast("로그인 후 별점을 남길 수 있습니다.", true);
+      setRatingOpen(false);
+      setLoginOpen(true);
+      return;
+    }
     try {
-      const result = await postRating(dateStr, currentMealType, s);
+      const result = await postRating(dateStr, currentMealType, s, auth.username);
       if (result.ok) {
         setRatings((prev) => ({
           ...prev,
           [dateStr]: { ...(prev[dateStr] || {}), [currentMealType]: result.fin_score },
+        }));
+        setMyRatings((prev) => ({
+          ...prev,
+          [dateStr]: { ...(prev[dateStr] || {}), [currentMealType]: s },
         }));
         showToast("별점이 저장되었습니다! ⭐");
         setRatingOpen(false);
@@ -165,7 +178,6 @@ export default function App() {
           onDateSelect={handleDateSelect}
           onPrevMonth={handlePrevMonth}
           onNextMonth={handleNextMonth}
-          schedule={schedule}
         />
 
         {/* 급식 상세 */}
@@ -175,7 +187,6 @@ export default function App() {
           mealType={currentMealType}
           score={score}
           onMealTypeChange={setCurrentMealType}
-          scheduleReason={scheduleReason}
         />
 
         {/* 오른쪽 패널 */}
@@ -193,23 +204,23 @@ export default function App() {
             </button>
 
             {/* 별점 */}
-            <button className="action-btn" onClick={() => setRatingOpen(true)}>
+            <button
+              className="action-btn"
+              onClick={() => {
+                if (!auth.loggedIn) {
+                  showToast("로그인 후 별점을 남길 수 있습니다.", true);
+                  setLoginOpen(true);
+                  return;
+                }
+                setRatingOpen(true);
+              }}
+            >
               별점 남기기
             </button>
 
             {/* 급식 신청 */}
             <button className="action-btn" onClick={() => setNotSupportedOpen(true)}>
               급식 신청
-            </button>
-
-            {/* 학사일정 ← 추가 */}
-            <button
-              className="action-btn"
-              onClick={() => setScheduleOpen(true)}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
-            >
-              <CalendarDays size={14} />
-              학사일정
             </button>
 
             {/* 문의하기 ← 추가 */}
@@ -273,13 +284,14 @@ export default function App() {
             weeklyMealType={currentWeeklyMealType}
             onWeeklyMealTypeChange={setCurrentWeeklyMealType}
           />
+
           <ReviewPanel
             viewDate={currentViewDate}
             mealType={currentMealType}
-            username={auth.username}
+            username={auth.loggedIn ? auth.username : ""}
             isAdmin={auth.isAdmin}
+            onRequireLogin={() => setLoginOpen(true)}
             onToast={showToast}
-            onRequireLogin={() => setLoginOpen(true)} 
           />
         </div>
       </div>
@@ -289,7 +301,7 @@ export default function App() {
         isOpen={ratingOpen}
         title={`${m}월 ${d}일 별점`}
         subtitle={currentMealType}
-        initialScore={score}
+        initialScore={myScore}
         onClose={() => setRatingOpen(false)}
         onConfirm={handleConfirmRating}
       />
@@ -306,9 +318,8 @@ export default function App() {
       <InquiryModal
         isOpen={inquiryOpen}
         onClose={() => setInquiryOpen(false)}
-        userId={auth.username}
+        userId={auth.loggedIn ? auth.username : ""}
         onToast={showToast}
-        onRequireLogin={() => setLoginOpen(true)}
       />
 
       {/* 관리자 문의 패널 ← 추가 */}
@@ -317,14 +328,6 @@ export default function App() {
         onClose={() => setAdminOpen(false)}
         adminUserId={auth.username}
         onToast={showToast}
-      />
-
-      {/* 학사일정 모달 ← 추가 */}
-      <ScheduleModal
-        isOpen={scheduleOpen}
-        onClose={() => setScheduleOpen(false)}
-        schedule={schedule}
-        initialDate={currentViewDate}
       />
 
       {/* 미지원 기능 오버레이 */}

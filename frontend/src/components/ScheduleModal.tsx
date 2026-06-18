@@ -11,7 +11,6 @@ function toDateStr(year: number, month: number, day: number): string {
   return `${year}${String(month + 1).padStart(2, "0")}${String(day).padStart(2, "0")}`;
 }
 
-// ✅ 문자열(일정 내용)을 기반으로 항상 동일한 색상 번호(0~2)를 반환하는 함수
 function getEventColorClass(text: string): string {
   if (!text) return "";
   let sum = 0;

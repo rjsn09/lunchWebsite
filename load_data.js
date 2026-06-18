@@ -68,14 +68,11 @@ async function fetchScheduleData(from, to) {
     if (data.SchoolSchedule) {
         const scheduleMap = {};
         
-        // 데이터 행 순회
         for (const row of data.SchoolSchedule[1].row) {
             const date = row.AA_YMD;
-            // SBTR_DD_YN이 'Y'이면 쉬는 날(공휴일 등) 1, 아니면 0
-            const isHoliday = row.SBTR_DD_YN === 'Y' ? 1 : 0;
             const eventName = row.EVENT_NM;
 
-            scheduleMap[date] = [isHoliday, eventName];
+            scheduleMap[date] = eventName;
         }
 
         fs.writeFileSync('data/data/school_schedule.json', JSON.stringify(scheduleMap, null, 2), 'utf-8');

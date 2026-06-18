@@ -101,7 +101,7 @@ async def upload_schedule_data():
     async with httpx.AsyncClient() as client:
         schedule_rows = []
         for date_key, info in data.items():
-            schedule_text = info[1]
+            schedule_text = info
             
             if schedule_text.strip() != "":
                 schedule_rows.append({

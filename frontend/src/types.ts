@@ -24,8 +24,8 @@ export interface InquiryItem {
   subject: string;
   message: string;
   created_at: string;
+  admin_reply?: string | null;
+  replied_at?: string | null;
 }
 
-export type ScheduleEntry = [number, string];
-
-export type ScheduleData = Record<string, ScheduleEntry>; // { "20260101": [0, "신정"] }
+export type ScheduleData = Record<string, [number, string]>;  

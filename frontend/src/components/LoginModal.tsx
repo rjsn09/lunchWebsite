@@ -18,11 +18,12 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
-      setUsername(""); setPassword(""); setPasswordConfirm("");
+      setUsername(""); setPassword(""); setPasswordConfirm(""); setShowPw(false);
       setLoading(false);
       requestAnimationFrame(() => {
         setMounted(true);
@@ -34,7 +35,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
   }, [isOpen]);
 
   useEffect(() => {
-    setUsername(""); setPassword(""); setPasswordConfirm("");
+    setUsername(""); setPassword(""); setPasswordConfirm(""); setShowPw(false);
   }, [tab]);
 
   if (!isOpen) return null;
@@ -151,14 +152,33 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
                 <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
               <input
-                type="password"
+                type={showPw ? "text" : "password"}
                 className="lm-input"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호를 입력하세요"
                 autoComplete={tab === "login" ? "current-password" : "new-password"}
                 disabled={loading}
+                style={{ paddingRight: 36 }}
               />
+              <button
+                type="button"
+                className="lm-pw-toggle"
+                onClick={() => setShowPw((p) => !p)}
+                tabIndex={-1}
+                aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 표시"}
+              >
+                {showPw ? (
+                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 4.22-5.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
 
@@ -170,7 +190,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
                   <path d="M9 12l2 2 4-4"/><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
                 <input
-                  type="password"
+                  type={showPw ? "text" : "password"}
                   className="lm-input"
                   value={passwordConfirm}
                   onChange={(e) => setPasswordConfirm(e.target.value)}
@@ -200,4 +220,3 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, onToast }:
     </div>
   );
 }
- 
