@@ -97,7 +97,7 @@ async def upload_schedule_data():
     except FileNotFoundError:
         print("[INFO] school_schedule.json 파일이 없어 학사일정 업로드를 건너뜁니다.")
         return
-
+    
     async with httpx.AsyncClient() as client:
         schedule_rows = []
         for date_key, info in data.items():
@@ -112,11 +112,11 @@ async def upload_schedule_data():
         if not schedule_rows:
             print("업로드할 학사일정이 없습니다.")
             return
-
-        headers_schedule = {**HEADERS, "Prefer": "return=minimal, resolution=ignore"}
+            
+        headers_schedule = {**HEADERS, "Prefer": "return=minimal, resolution=ignore-duplicates"}
         
         res = await client.post(
-            f"{SUPABASE_URL}/rest/v1/school_schedule",
+            f"{SUPABASE_URL}/rest/v1/school_schedule?on_conflict=date",
             headers=headers_schedule,
             json=schedule_rows
         )
