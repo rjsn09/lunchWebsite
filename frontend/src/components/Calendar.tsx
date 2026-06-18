@@ -77,10 +77,25 @@ const Calendar: React.FC<CalendarProps> = ({
                     onClick={() => {
                       if (day) onDateSelect(new Date(year, month, day));
                     }}
+                    // 테이블 셀에서 말줄임표(ellipsis)가 작동하려면 maxWidth 설정이 필요합니다.
+                    style={{ maxWidth: 0, overflow: "hidden", verticalAlign: "top", padding: "8px 4px" }}
                   >
-                    {day ?? ""}
+                    <div style={{ textAlign: "center", marginBottom: "4px" }}>{day ?? ""}</div>
                     {isHoliday && reason && (
-                      <span className="holiday-label">{reason}</span>
+                      <div 
+                        className="holiday-label" 
+                        style={{
+                          display: "block",
+                          fontSize: "0.7rem", // 글자 크기 축소
+                          whiteSpace: "nowrap", // 줄바꿈 방지
+                          overflow: "hidden", // 넘치는 영역 숨김
+                          textOverflow: "ellipsis", // 끝에 ... 표시
+                          textAlign: "center",
+                          width: "100%",
+                        }}
+                      >
+                        {reason}
+                      </div>
                     )}
                   </td>
                 );

@@ -33,12 +33,22 @@ const ScheduleModal: React.FC<ScheduleModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="not-supported-overlay"
-      style={{ display: "flex" }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="not-supported-card" style={{ width: "min(420px, 92vw)", maxHeight: "80vh", overflowY: "auto", textAlign: "left" }}>
+        <div
+        className="not-supported-overlay"
+        style={{ display: "flex" }}
+        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        >
+        <div 
+            className="not-supported-card" 
+            style={{ 
+            width: "90vw", 
+            maxWidth: "600px", 
+            maxHeight: "90vh", 
+            overflowY: "auto", 
+            textAlign: "left",
+            padding: "24px"
+            }}
+        >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <button
             className="calendar-nav-btn"
