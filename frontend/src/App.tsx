@@ -7,10 +7,12 @@ import ReviewPanel from "./components/ReviewPanel";
 import LoginModal from "./components/LoginModal";
 import InquiryModal from "./components/InquiryModal";
 import AdminPanel from "./components/AdminPanel";
+// @ts-ignore
 import ScheduleModal from "./components/ScheduleModal";
 import { useToast } from "./components/useToast";
 import { fetchMeals, fetchRatings, postRating, fetchSchedule } from "./api";
 import type { MealData, MealType, RatingsData, ScheduleData } from "./types";
+// @ts-ignore
 import { Sun, Moon, LogIn, LogOut, User, MessageSquare, ShieldCheck, CalendarDays } from "lucide-react";
 
 function toDateStr(d: Date): string {

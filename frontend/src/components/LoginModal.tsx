@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+// @ts-ignore
 import "../login-modal.css";
 
 interface Props {

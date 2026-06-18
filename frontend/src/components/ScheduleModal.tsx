@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from "react";
 
-// 1. ✅ initialDate 속성 추가
 interface ScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
   schedule?: Record<string, [number, string]>;
-  initialDate?: Date; // App.tsx에서 넘겨주는 초기 날짜
+  initialDate?: Date;
 }
 
 function toDateStr(year: number, month: number, day: number): string {
   return `${year}${String(month + 1).padStart(2, "0")}${String(day).padStart(2, "0")}`;
 }
 
+// ✅ 문자열(일정 내용)을 기반으로 항상 동일한 색상 번호(0~2)를 반환하는 함수
+function getEventColorClass(text: string): string {
+  if (!text) return "";
+  let sum = 0;
+  for (let i = 0; i < text.length; i++) {
+    sum += text.charCodeAt(i);
+  }
+  return `event-bg-${sum % 3}`;
+}
+
 export default function ScheduleModal({ 
   isOpen, 
   onClose, 
   schedule = {}, 
-  initialDate = new Date()
+  initialDate = new Date() 
 }: ScheduleModalProps) {
   const [viewDate, setViewDate] = useState(initialDate);
 
@@ -46,7 +55,6 @@ export default function ScheduleModal({
     rows.push(cells.slice(i, i + 7));
   }
 
-  // 모달 밖 클릭 시 닫기
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
   };
@@ -56,14 +64,12 @@ export default function ScheduleModal({
       <div className="calendar-modal-content">
         <button className="calendar-modal-close" onClick={onClose}>×</button>
 
-        {/* 1. 상단 월 이동 네비게이션 */}
         <div className="calendar-header-nav">
           <button onClick={onPrevMonth}>&lt;</button>
           <h2>{year}.{String(month + 1).padStart(2, "0")}</h2>
           <button onClick={onNextMonth}>&gt;</button>
         </div>
 
-        {/* 2. 컨트롤 탭 영역 (디자인용) */}
         <div className="calendar-controls">
           <div className="calendar-tab-group">
             <button className="calendar-tab active">전체</button>
@@ -78,7 +84,6 @@ export default function ScheduleModal({
           </div>
         </div>
 
-        {/* 3. 캘린더 그리드 영역 */}
         <table className="calendar-grid-table">
           <thead>
             <tr>
@@ -97,20 +102,18 @@ export default function ScheduleModal({
                       displayText = entry[1];
                     }
                     
-                    // ✅ 1. 토요휴업일 문자열을 토요일로 변환
                     if (displayText.includes("토요휴업일")) {
                       displayText = displayText.replace(/토요휴업일/g, "토요일");
                     }
                     
-                    // ✅ 2. 빈 일정이면서 주말인 경우 텍스트 강제 추가
                     if (!displayText) {
-                      if (ci === 0) displayText = "일요일"; // 일요일 열
-                      if (ci === 6) displayText = "토요일"; // 토요일 열
+                      if (ci === 0) displayText = "일요일";
+                      if (ci === 6) displayText = "토요일";
                     }
                   }
 
-                  // 이벤트 바의 색상을 글자 길이나 날짜 등 기준에 따라 여러 색으로 분배 (사진과 유사하게)
-                  const colorClass = `event-bg-${(day || 0) % 3}`;
+                  // ✅ 일정 내용을 기반으로 동일한 색상을 가져옴
+                  const colorClass = getEventColorClass(displayText);
 
                   return (
                     <td key={ci}>
@@ -123,7 +126,6 @@ export default function ScheduleModal({
                     </td>
                   );
                 })}
-                {/* 빈 칸 채우기 */}
                 {row.length < 7 &&
                   Array.from({ length: 7 - row.length }).map((_, i) => (
                     <td key={`empty-${i}`} />

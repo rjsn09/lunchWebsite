@@ -764,6 +764,10 @@ body.light-mode .toast-notification {
   background: #fff;
   width: 900px;
   max-width: 95vw;
+  /* ✅ 최대 높이를 화면의 90%로 제한하고 Flexbox를 적용 */
+  max-height: 90vh; 
+  display: flex;
+  flex-direction: column;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   padding: 30px;
@@ -779,7 +783,11 @@ body.light-mode .toast-notification {
   color: #888;
 }
 
-/* 캘린더 상단 네비게이션 (< 2025.01 >) */
+/* 캘린더 상단 네비게이션 및 컨트롤 탭 크기 고정 */
+.calendar-header-nav, .calendar-controls {
+  flex-shrink: 0; 
+}
+
 .calendar-header-nav {
   display: flex;
   justify-content: center;
@@ -800,7 +808,6 @@ body.light-mode .toast-notification {
   letter-spacing: 1px;
 }
 
-/* 컨트롤 탭 (카테고리 & 뷰 타입) */
 .calendar-controls {
   display: flex;
   justify-content: space-between;
@@ -835,6 +842,9 @@ body.light-mode .toast-notification {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  /* ✅ 남은 높이를 모두 채우도록 변경 */
+  flex: 1; 
+  min-height: 400px;
 }
 
 .calendar-grid-table th, .calendar-grid-table td {
@@ -853,7 +863,7 @@ body.light-mode .toast-notification {
 .calendar-grid-table th:last-child { color: #3498db; }
 
 .calendar-grid-table td {
-  height: 100px;
+  /* ✅ height: 100px; 삭제 */
   vertical-align: top;
   padding: 6px;
 }
@@ -882,7 +892,7 @@ body.light-mode .toast-notification {
   color: #333;
 }
 
-/* 사진과 비슷한 은은한 파스텔톤 배경 컬러 클래스 */
+/* 색상 클래스 */
 .event-bg-0 { background-color: #f9f2c6; } /* 연노랑 */
 .event-bg-1 { background-color: #ebd4e9; } /* 연보라 */
-.event-bg-2 { background-color: #d4e9f9; } /* 연파랑 */ 
+.event-bg-2 { background-color: #d4e9f9; } /* 연파랑 */
