@@ -748,3 +748,141 @@ body.light-mode .toast-notification {
   border-radius: 999px;
   vertical-align: middle;
 }
+
+/* 모달 배경 및 컨테이너 */
+.calendar-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.calendar-modal-content {
+  background: #fff;
+  width: 900px;
+  max-width: 95vw;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  padding: 30px;
+  position: relative;
+  color: #333;
+}
+
+.calendar-modal-close {
+  position: absolute;
+  top: 15px; right: 20px;
+  background: none; border: none;
+  font-size: 24px; cursor: pointer;
+  color: #888;
+}
+
+/* 캘린더 상단 네비게이션 (< 2025.01 >) */
+.calendar-header-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.calendar-header-nav button {
+  background: none; border: none;
+  font-size: 20px; cursor: pointer; color: #555;
+}
+
+.calendar-header-nav h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* 컨트롤 탭 (카테고리 & 뷰 타입) */
+.calendar-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.calendar-tab-group {
+  display: flex;
+  border: 1px solid #ccc;
+}
+
+.calendar-tab {
+  padding: 8px 16px;
+  background: #fff;
+  border: none;
+  border-right: 1px solid #ccc;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+}
+.calendar-tab:last-child {
+  border-right: none;
+}
+.calendar-tab.active {
+  background: #888;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 캘린더 테이블 */
+.calendar-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.calendar-grid-table th, .calendar-grid-table td {
+  border: 1px solid #e0e0e0;
+}
+
+.calendar-grid-table th {
+  padding: 12px 0;
+  font-weight: bold;
+  font-size: 15px;
+  background: #fafafa;
+}
+
+/* 일요일(빨강), 토요일(파랑) 헤더 */
+.calendar-grid-table th:first-child { color: #d9534f; }
+.calendar-grid-table th:last-child { color: #3498db; }
+
+.calendar-grid-table td {
+  height: 100px;
+  vertical-align: top;
+  padding: 6px;
+}
+
+.calendar-date-num {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* 날짜 텍스트 색상 */
+.calendar-grid-table td:first-child .calendar-date-num { color: #d9534f; }
+.calendar-grid-table td:last-child .calendar-date-num { color: #3498db; }
+.calendar-grid-table td:not(:first-child):not(:last-child) .calendar-date-num { color: #333; }
+
+/* 일정 블록 */
+.calendar-event {
+  font-size: 12px;
+  padding: 4px 6px;
+  margin-bottom: 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+}
+
+/* 사진과 비슷한 은은한 파스텔톤 배경 컬러 클래스 */
+.event-bg-0 { background-color: #f9f2c6; } /* 연노랑 */
+.event-bg-1 { background-color: #ebd4e9; } /* 연보라 */
+.event-bg-2 { background-color: #d4e9f9; } /* 연파랑 */ 
