@@ -1,17 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
+// 1. ✅ initialDate 속성 추가
 interface ScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
-  schedule?: Record<string, [number, string]>; // [휴일여부(0|1), 일정내용]
+  schedule?: Record<string, [number, string]>;
+  initialDate?: Date; // App.tsx에서 넘겨주는 초기 날짜
 }
 
 function toDateStr(year: number, month: number, day: number): string {
   return `${year}${String(month + 1).padStart(2, "0")}${String(day).padStart(2, "0")}`;
 }
 
-export default function ScheduleModal({ isOpen, onClose, schedule = {} }: ScheduleModalProps) {
-  const [viewDate, setViewDate] = useState(new Date());
+export default function ScheduleModal({ 
+  isOpen, 
+  onClose, 
+  schedule = {}, 
+  initialDate = new Date()
+}: ScheduleModalProps) {
+  const [viewDate, setViewDate] = useState(initialDate);
+
+  useEffect(() => {
+    if (isOpen) {
+      setViewDate(initialDate);
+    }
+  }, [isOpen, initialDate]);
 
   if (!isOpen) return null;
 
