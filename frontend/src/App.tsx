@@ -271,13 +271,13 @@ export default function App() {
             weeklyMealType={currentWeeklyMealType}
             onWeeklyMealTypeChange={setCurrentWeeklyMealType}
           />
-
           <ReviewPanel
             viewDate={currentViewDate}
             mealType={currentMealType}
-            username={auth.loggedIn ? auth.username : ""}
+            username={auth.username}
             isAdmin={auth.isAdmin}
             onToast={showToast}
+            onRequireLogin={() => setLoginOpen(true)} 
           />
         </div>
       </div>
