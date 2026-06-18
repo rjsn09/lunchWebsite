@@ -455,7 +455,7 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ viewDate, mealType, username,
               <div key={r.id} className="review-item">
                 <div className="review-item-meta">
                   <strong className="review-author">{r.author}</strong>
-                  <span className="review-time">{r.time}</span>
+                  <span className="review-time">{parseInt(m)}월 {parseInt(d)}일 {r.time}</span>
                 </div>
                 <div className="review-text">{r.text}</div>
                 {isAdmin && (
