@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Calendar from "./components/Calendar";
 import MealDetail from "./components/MealDetail";
 import WeeklyPanel from "./components/WeeklyPanel";
@@ -54,8 +54,8 @@ export default function App() {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [notSupportedOpen, setNotSupportedOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [inquiryOpen, setInquiryOpen] = useState(false);   // ← 추가
-  const [adminOpen, setAdminOpen] = useState(false);        // ← 추가
+  const [inquiryOpen, setInquiryOpen] = useState(false);   
+  const [adminOpen, setAdminOpen] = useState(false);        
   const [auth, setAuth] = useState<AuthState>(loadAuth);
   const { toast, showToast } = useToast();
   const [allScheduleData, setAllScheduleData] = useState<ScheduleData>({});
@@ -100,9 +100,9 @@ export default function App() {
     })();
   }, [auth.loggedIn, auth.username]);
 
+  // ── 학사일정 로드 ──────────────────────────────────────────
   useEffect(() => {
     (async () => {
-      // (기존 fetchMeals 등...)
       try {
         const s = await fetchSchedule();
         setAllScheduleData(s);
@@ -112,13 +112,16 @@ export default function App() {
     })();
   }, []);
 
-  // ── 유도 데이터 ───────────────────────────────────────────
+  // ── 유도 데이터 (여기로 currentSchedule 선언 위치를 옮겼습니다) ──
   const dateStr = toDateStr(currentViewDate);
   const mealsToday = allMealData[dateStr] || [];
   const score = ratings?.[dateStr]?.[currentMealType] ?? 0;
   const myScore = myRatings?.[dateStr]?.[currentMealType] ?? 0;
   const m = String(currentViewDate.getMonth() + 1).padStart(2, "0");
   const d = String(currentViewDate.getDate()).padStart(2, "0");
+
+  const currentSchedule = allScheduleData[dateStr];
+  const currentScheduleReason = currentSchedule ? currentSchedule[1] : undefined;
 
   // ── 핸들러 ────────────────────────────────────────────────
   const handlePrevMonth = useCallback(() => {
@@ -203,6 +206,7 @@ export default function App() {
           mealType={currentMealType}
           score={score}
           onMealTypeChange={setCurrentMealType}
+          scheduleReason={currentScheduleReason} // ✅ 올바른 이름(scheduleReason)으로 수정됨!
         />
 
         {/* 오른쪽 패널 */}
@@ -239,7 +243,7 @@ export default function App() {
               급식 신청
             </button>
 
-            {/* 문의하기 ← 추가 */}
+            {/* 문의하기 */}
             <button
               className="action-btn"
               onClick={() => setInquiryOpen(true)}
@@ -249,7 +253,7 @@ export default function App() {
               문의하기
             </button>
 
-            {/* 관리자: 문의 보기 ← 추가 (관리자만 표시) */}
+            {/* 관리자: 문의 보기 */}
             {auth.isAdmin && (
               <button
                 className="action-btn"
@@ -335,7 +339,7 @@ export default function App() {
         onToast={showToast}
       />
 
-      {/* 문의하기 모달 ← 추가 */}
+      {/* 문의하기 모달 */}
       <InquiryModal
         isOpen={inquiryOpen}
         onClose={() => setInquiryOpen(false)}
@@ -343,7 +347,7 @@ export default function App() {
         onToast={showToast}
       />
 
-      {/* 관리자 문의 패널 ← 추가 */}
+      {/* 관리자 문의 패널 */}
       <AdminPanel
         isOpen={adminOpen}
         onClose={() => setAdminOpen(false)}
