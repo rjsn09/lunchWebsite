@@ -1,4 +1,4 @@
-import type { MealData, RatingsData, InquiryItem } from "./types";
+import type { MealData, RatingsData, InquiryItem, ScheduleData } from "./types";
 
 export async function fetchMeals(): Promise<MealData> {
   const res = await fetch("/api/meals");
@@ -112,4 +112,11 @@ export async function adminDeleteReview(
   const data = await res.json();
   if (!res.ok) throw new Error(data.detail || "삭제 실패");
   return data;
+}
+
+// (기존 코드들 사이에 추가)
+export async function fetchSchedule(): Promise<ScheduleData> {
+  const res = await fetch("/api/schedule");
+  if (!res.ok) throw new Error("학사일정 데이터 로드 실패");
+  return res.json();
 }

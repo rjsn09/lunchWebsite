@@ -28,4 +28,4 @@ export interface InquiryItem {
   replied_at?: string | null;
 }
 
-export type ScheduleData = Record<string, [number, string]>;  
+export type ScheduleData = Record<string, [number, string]>;

@@ -7,9 +7,11 @@ import ReviewPanel from "./components/ReviewPanel";
 import LoginModal from "./components/LoginModal";
 import InquiryModal from "./components/InquiryModal";
 import AdminPanel from "./components/AdminPanel";
+import ScheduleModal from "./components/ScheduleModal"; 
+
 import { useToast } from "./components/useToast";
-import { fetchMeals, fetchRatings, fetchMyRatings, postRating } from "./api";
-import type { MealData, MealType, RatingsData } from "./types";
+import { fetchMeals, fetchRatings, fetchMyRatings, postRating, fetchSchedule } from "./api"; 
+import type { MealData, MealType, RatingsData, ScheduleData } from "./types"; 
 // @ts-ignore
 import { Sun, Moon, LogIn, LogOut, User, MessageSquare, ShieldCheck } from "lucide-react";
 
@@ -56,6 +58,8 @@ export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);        // ← 추가
   const [auth, setAuth] = useState<AuthState>(loadAuth);
   const { toast, showToast } = useToast();
+  const [allScheduleData, setAllScheduleData] = useState<ScheduleData>({});
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   // ── 식단 & 별점 로드 ──────────────────────────────────────
   useEffect(() => {
@@ -95,6 +99,18 @@ export default function App() {
       }
     })();
   }, [auth.loggedIn, auth.username]);
+
+  useEffect(() => {
+    (async () => {
+      // (기존 fetchMeals 등...)
+      try {
+        const s = await fetchSchedule();
+        setAllScheduleData(s);
+      } catch (e) {
+        console.warn("학사일정 로드 실패:", e);
+      }
+    })();
+  }, []);
 
   // ── 유도 데이터 ───────────────────────────────────────────
   const dateStr = toDateStr(currentViewDate);
@@ -250,6 +266,11 @@ export default function App() {
               </button>
             )}
 
+            {/* 학사일정 */}
+            <button className="action-btn" onClick={() => setScheduleOpen(true)}>
+              학사일정
+            </button>
+
             {/* 로그인 / 사용자 정보 + 로그아웃 */}
             {auth.loggedIn ? (
               <div className="auth-user-row">
@@ -328,6 +349,13 @@ export default function App() {
         onClose={() => setAdminOpen(false)}
         adminUserId={auth.username}
         onToast={showToast}
+      />
+
+      <ScheduleModal
+        isOpen={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        schedule={allScheduleData}
+        initialDate={currentViewDate}
       />
 
       {/* 미지원 기능 오버레이 */}
