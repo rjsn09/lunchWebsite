@@ -399,13 +399,19 @@ async def post_review(payload: ReviewPayload):
 # ──────────────────────────────────────────────────────
 # Supabase inquiries 테이블: id, user_id, subject, message, admin_reply, replied_at, created_at
 
-ADMIN_USER_IDS = set(
-    filter(None, os.getenv("ADMIN_USER_IDS", "admin").split(","))
-)
-
-def require_admin(user_id: str):
-    if user_id not in ADMIN_USER_IDS:
+async def require_admin(user_id: str):
+    """users 테이블의 is_admin 컬럼으로 관리자 여부 확인"""
+    if not user_id:
         raise HTTPException(status_code=403, detail="관리자만 접근할 수 있습니다.")
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/users",
+            headers=get_sb_headers(),
+            params={"select": "is_admin", "user_id": f"eq.{user_id}"},
+        )
+        rows = res.json() if res.status_code == 200 else []
+        if not rows or not rows[0].get("is_admin"):
+            raise HTTPException(status_code=403, detail="관리자만 접근할 수 있습니다.")
 
 
 class InquiryPayload(BaseModel):
@@ -437,7 +443,7 @@ async def post_inquiry(payload: InquiryPayload):
 
 @app.get("/api/admin/inquiries")
 async def get_inquiries(admin_user_id: str):
-    require_admin(admin_user_id)
+    await require_admin(admin_user_id)
     async with httpx.AsyncClient() as client:
         res = await client.get(
             f"{SUPABASE_URL}/rest/v1/inquiries",
@@ -487,7 +493,7 @@ class InquiryReplyPayload(BaseModel):
 
 @app.patch("/api/admin/inquiries/reply")
 async def reply_to_inquiry(payload: InquiryReplyPayload):
-    require_admin(payload.admin_user_id)
+    await require_admin(payload.admin_user_id)
     if not payload.reply.strip():
         raise HTTPException(status_code=400, detail="답변 내용을 입력해주세요.")
     from datetime import datetime, timezone
@@ -510,7 +516,7 @@ async def reply_to_inquiry(payload: InquiryReplyPayload):
 
 @app.delete("/api/inquiries/{inquiry_id}")
 async def delete_inquiry(inquiry_id: int, admin_user_id: str):
-    require_admin(admin_user_id)
+    await require_admin(admin_user_id)
     async with httpx.AsyncClient() as client:
         res = await client.delete(
             f"{SUPABASE_URL}/rest/v1/inquiries",
