@@ -11,29 +11,3 @@
     
     SupaBaseUrl: Supabase project url
 
-## Supabase 테이블 구조
-
-### `meal_data`
-|    컬럼     | 타입 |
-|-------------|------|
-|    date     | text |
-| MMEAL_SC_NM | text |
-|   CAL_INFO  | text |
-|   IMG_PATH  | text |
-
-### `DDISH_NM`
-|     컬럼    | 타입 |
-|-------------|------|
-|     date    | text |
-| MMEAL_SC_NM | text |
-|   DDISH_NM  | text |
-
-### `ratings`
-|     컬럼     |   타입   |
-|--------------|----------|
-|      id      | int (PK) |
-|     date     |   text   |
-| MMEAL_SC_NM  |   text   |
-|     score    |   float  |
-| rating_times |    int   |
-|     total    |   float  |
