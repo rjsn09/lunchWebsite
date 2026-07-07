@@ -77,12 +77,12 @@ async def get_meals(response: Response):
         meal_task = client.get(
             f"{SUPABASE_URL}/rest/v1/meal_data",
             headers=get_sb_headers(),
-            params={"limit": 10000}
+            params={"limit": 100000}
         )
         dish_task = client.get(
             f"{SUPABASE_URL}/rest/v1/DDISH_NM",
             headers=get_sb_headers(),
-            params={"limit": 10000}
+            params={"limit": 100000}
         )
         meal_res, dish_res = await asyncio.gather(meal_task, dish_task)
 

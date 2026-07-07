@@ -80,4 +80,4 @@ async function fetchScheduleData(from, to) {
     }
 }
 
-fetchData(["20260601", "20260630"], ["20260601", "20271231"], false, true);
+fetchData(["20260601", "20260830"], ["20260601", "20271231"], true, false);
