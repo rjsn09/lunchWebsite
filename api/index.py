@@ -1,7 +1,5 @@
 import os
 import httpx
-import smtplib
-from email.mime.text import MIMEText
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Response
@@ -20,33 +18,12 @@ app.add_middleware(
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "").strip()
 
-# Gmail SMTP 설정 (환경변수로 관리)
-GMAIL_USER   = os.getenv("GMAIL_USER", "").strip()    # 발신 Gmail 주소
-GMAIL_PASS   = os.getenv("GMAIL_PASS", "").strip()    # Gmail 앱 비밀번호
-ADMIN_EMAIL  = os.getenv("ADMIN_EMAIL", "").strip()   # 운영자 수신 이메일
-
 def get_sb_headers():
     return {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
         "Content-Type": "application/json",
     }
-
-# ──────────────────────────────────────────────────────
-# 유틸: 요청자가 실제 관리자인지 DB에서 매번 확인
-# ──────────────────────────────────────────────────────
-async def verify_admin(user_id: str) -> bool:
-    """Supabase users 테이블의 is_admin 컬럼을 실시간으로 확인합니다."""
-    async with httpx.AsyncClient() as client:
-        res = await client.get(
-            f"{SUPABASE_URL}/rest/v1/users",
-            headers=get_sb_headers(),
-            params={"select": "is_admin", "user_id": f"eq.{user_id}"},
-        )
-        if res.status_code != 200 or not res.json():
-            return False
-        return bool(res.json()[0].get("is_admin", False))
-
 
 # ──────────────────────────────────────────────────────
 # 기존 엔드포인트
@@ -74,16 +51,8 @@ async def get_ratings():
 @app.get("/api/meals")
 async def get_meals(response: Response):
     async with httpx.AsyncClient() as client:
-        meal_task = client.get(
-            f"{SUPABASE_URL}/rest/v1/meal_data",
-            headers=get_sb_headers(),
-            params={"limit": 100000}
-        )
-        dish_task = client.get(
-            f"{SUPABASE_URL}/rest/v1/DDISH_NM",
-            headers=get_sb_headers(),
-            params={"limit": 100000}
-        )
+        meal_task = client.get(f"{SUPABASE_URL}/rest/v1/meal_data", headers=get_sb_headers())
+        dish_task = client.get(f"{SUPABASE_URL}/rest/v1/DDISH_NM", headers=get_sb_headers())
         meal_res, dish_res = await asyncio.gather(meal_task, dish_task)
 
         meal_rows = meal_res.json() if meal_res.status_code == 200 else []
@@ -109,7 +78,6 @@ async def get_meals(response: Response):
                 "CAL_INFO": f"{m['CAL_INFO']} Kcal" if m.get("CAL_INFO") else None,
                 "IMG_PATH": m.get("IMG_PATH"),
             })
-
         response.headers["Cache-Control"] = "public, s-maxage=3600, stale-while-revalidate=60"
         return result
 
@@ -118,10 +86,38 @@ class RatingPayload(BaseModel):
     date_str: str
     meal_type: str
     score: float
+    user_id: str = ""  # 1인 1회 추적용
 
 @app.post("/api/ratings")
 async def post_rating(payload: RatingPayload):
+    """
+    별점 1인 1회: user_ratings 테이블로 개인 기록 관리.
+    집계는 ratings 테이블에서 rating_times / total 로 평균 계산.
+    
+    user_ratings 테이블: id, date, meal_type, user_id, score, created_at
+    """
     async with httpx.AsyncClient() as client:
+        # ── 1. 이미 별점을 남겼는지 확인 ──────────────────
+        prev_score = 0.0
+        has_voted = False
+
+        if payload.user_id:
+            check_res = await client.get(
+                f"{SUPABASE_URL}/rest/v1/user_ratings",
+                headers=get_sb_headers(),
+                params={
+                    "select": "id,score",
+                    "date": f"eq.{payload.date_str}",
+                    "meal_type": f"eq.{payload.meal_type}",
+                    "user_id": f"eq.{payload.user_id}",
+                },
+            )
+            if check_res.status_code == 200 and check_res.json():
+                has_voted = True
+                prev_score = check_res.json()[0]["score"]
+                prev_id = check_res.json()[0]["id"]
+
+        # ── 2. 집계 테이블 조회 ───────────────────────────
         get_res = await client.get(
             f"{SUPABASE_URL}/rest/v1/ratings",
             headers=get_sb_headers(),
@@ -138,36 +134,81 @@ async def post_rating(payload: RatingPayload):
         existing = rows[0] if rows else None
         rating_times = existing["rating_times"] if existing else 0
         total = existing["total"] if existing else 0.0
-        new_times = rating_times + 1
-        new_total = total + payload.score
-        fin_score = round(new_total / new_times, 1)
 
-        body = {
+        # ── 3. 집계 계산 (재투표면 이전 점수 차감) ─────────
+        if has_voted:
+            total = total - prev_score + payload.score
+        else:
+            rating_times += 1
+            total += payload.score
+        fin_score = round(total / rating_times, 1) if rating_times > 0 else payload.score
+
+        agg_body = {
             "date": payload.date_str,
             "MMEAL_SC_NM": payload.meal_type,
             "score": fin_score,
-            "rating_times": new_times,
-            "total": new_total,
+            "rating_times": rating_times,
+            "total": total,
         }
 
+        # ── 4. 집계 저장 ──────────────────────────────────
         if existing:
             save_res = await client.patch(
                 f"{SUPABASE_URL}/rest/v1/ratings",
                 headers={**get_sb_headers(), "Prefer": "return=representation"},
                 params={"id": f"eq.{existing['id']}"},
-                json=body,
+                json=agg_body,
             )
         else:
             save_res = await client.post(
                 f"{SUPABASE_URL}/rest/v1/ratings",
                 headers={**get_sb_headers(), "Prefer": "return=representation"},
-                json=body,
+                json=agg_body,
             )
-
         if save_res.status_code not in [200, 201]:
             raise HTTPException(status_code=save_res.status_code, detail=save_res.text)
 
+        # ── 5. 개인 별점 저장 ─────────────────────────────
+        if payload.user_id:
+            user_body = {"date": payload.date_str, "meal_type": payload.meal_type,
+                         "user_id": payload.user_id, "score": payload.score}
+            if has_voted:
+                await client.patch(
+                    f"{SUPABASE_URL}/rest/v1/user_ratings",
+                    headers=get_sb_headers(),
+                    params={"id": f"eq.{prev_id}"},
+                    json={"score": payload.score},
+                )
+            else:
+                await client.post(
+                    f"{SUPABASE_URL}/rest/v1/user_ratings",
+                    headers=get_sb_headers(),
+                    json=user_body,
+                )
+
         return {"ok": True, "fin_score": fin_score}
+
+
+@app.get("/api/ratings/mine")
+async def get_my_ratings(user_id: str):
+    """GET /api/ratings/mine?user_id= — 내가 남긴 별점 목록"""
+    if not user_id:
+        return {}
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/user_ratings",
+            headers=get_sb_headers(),
+            params={"select": "date,meal_type,score", "user_id": f"eq.{user_id}"},
+        )
+        if res.status_code != 200:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+        result: dict = {}
+        for row in res.json():
+            d = row["date"]
+            if d not in result:
+                result[d] = {}
+            result[d][row["meal_type"]] = row["score"]
+        return result
 
 
 # ──────────────────────────────────────────────────────
@@ -211,7 +252,7 @@ async def post_login(payload: LoginPayload):
             f"{SUPABASE_URL}/rest/v1/users",
             headers=get_sb_headers(),
             params={
-                "select": "user_id,password,is_admin",
+                "select": "user_id,password",
                 "user_id": f"eq.{payload.user_id}",
                 "password": f"eq.{payload.password}",
             },
@@ -227,11 +268,7 @@ async def post_login(payload: LoginPayload):
         if existing["password"] != payload.password:
             raise HTTPException(status_code=401, detail="비밀번호가 틀렸습니다.")
 
-        return {
-            "ok": True,
-            "user_id": existing["user_id"],
-            "is_admin": bool(existing.get("is_admin", False)),  # ← 추가
-        }
+        return {"ok": True, "user_id": existing["user_id"]}
 
 
 # ──────────────────────────────────────────────────────
@@ -240,6 +277,10 @@ async def post_login(payload: LoginPayload):
 
 @app.get("/api/reviews")
 async def get_reviews(date: str, meal_type: str):
+    """
+    GET /api/reviews?date=20250528&meal_type=조식
+    Supabase reviews 테이블: id, date, meal_type, user_id, text, created_at
+    """
     async with httpx.AsyncClient() as client:
         res = await client.get(
             f"{SUPABASE_URL}/rest/v1/reviews",
@@ -265,18 +306,61 @@ async def get_reviews(date: str, meal_type: str):
         ]
 
 
+# ──────────────────────────────────────────────────────
+# 욕설 필터
+# ──────────────────────────────────────────────────────
+
+BANNED_WORDS: list[str] = [
+    # 비속어·욕설 (초성/변형 포함 주요 패턴)
+    "씨발", "시발", "ㅅㅂ", "씨바", "씨팔", "시팔",
+    "개새끼", "개새", "ㄱㅅㄲ", "개쉐끼",
+    "존나", "존내", "ㅈㄴ",
+    "병신", "ㅂㅅ", "븅신",
+    "미친놈", "미친년", "미친새끼", "미친",
+    "새끼", "쌔끼", "ㅅㄲ",
+    "년", "놈",
+    "지랄", "ㅈㄹ",
+    "개소리", "개같",
+    "꺼져", "뒤져", "뒤지",
+    "보지", "자지", "보짓", "자짓",
+    "창녀", "창놈", "갈보",
+    "찐따", "찐찐", "장애",
+    "한남", "한녀", "페미",   # 혐오 표현
+    "wtf", "fuck", "shit", "bitch", "asshole", "bastard",
+]
+
+def contains_banned(text: str) -> str | None:
+    """욕설 포함 여부 확인. 포함 시 해당 단어 반환, 없으면 None."""
+    lower = text.lower().replace(" ", "")
+    for word in BANNED_WORDS:
+        if word in lower:
+            return word
+    return None
+
+
 class ReviewPayload(BaseModel):
     date: str
     meal_type: str
-    user_id: str
+    user_id: str   # 비로그인 시 빈 문자열 → 서버에서 "익명"으로 처리
     text: str
 
 @app.post("/api/reviews")
 async def post_review(payload: ReviewPayload):
-    if not payload.text.strip():
+    """
+    POST /api/reviews
+    Body: { date, meal_type, user_id, text }
+    - user_id가 빈 문자열이면 익명으로 저장
+    - 욕설 포함 시 400 반환
+    """
+    text = payload.text.strip()
+    if not text:
         raise HTTPException(status_code=400, detail="리뷰 내용을 입력해주세요.")
-    if not payload.user_id.strip():
-        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+
+    banned = contains_banned(text)
+    if banned:
+        raise HTTPException(status_code=400, detail="욕설이나 부적절한 표현이 포함되어 있습니다.")
+
+    author = payload.user_id.strip() if payload.user_id.strip() else "익명"
 
     async with httpx.AsyncClient() as client:
         res = await client.post(
@@ -285,8 +369,8 @@ async def post_review(payload: ReviewPayload):
             json={
                 "date": payload.date,
                 "meal_type": payload.meal_type,
-                "user_id": payload.user_id,
-                "text": payload.text.strip(),
+                "user_id": author,
+                "text": text,
             },
         )
         if res.status_code not in [200, 201]:
@@ -304,168 +388,224 @@ async def post_review(payload: ReviewPayload):
         }
 
 
-# ── 관리자: 리뷰 수정 ─────────────────────────────────
-
-class ReviewEditPayload(BaseModel):
-    review_id: str | int
-    new_text: str
-    admin_user_id: str   # 프론트가 전달하는 요청자 ID → 백엔드가 DB로 재검증
-
-@app.patch("/api/admin/reviews")
-async def admin_edit_review(payload: ReviewEditPayload):
-    if not await verify_admin(payload.admin_user_id):
-        raise HTTPException(status_code=403, detail="관리자 권한이 없습니다.")
-    if not payload.new_text.strip():
-        raise HTTPException(status_code=400, detail="수정할 내용을 입력해주세요.")
-
-    async with httpx.AsyncClient() as client:
-        res = await client.patch(
-            f"{SUPABASE_URL}/rest/v1/reviews",
-            headers={**get_sb_headers(), "Prefer": "return=representation"},
-            params={"id": f"eq.{payload.review_id}"},
-            json={"text": payload.new_text.strip()},
-        )
-        if res.status_code not in [200, 201]:
-            raise HTTPException(status_code=res.status_code, detail=res.text)
-
-        row = res.json()[0]
-        return {
-            "ok": True,
-            "review": {
-                "id": row["id"],
-                "author": row["user_id"],
-                "text": row["text"],
-                "time": row["created_at"][11:16] if row.get("created_at") else "",
-            },
-        }
-
-
-# ── 관리자: 리뷰 삭제 ─────────────────────────────────
-
-class ReviewDeletePayload(BaseModel):
-    review_id: str | int
-    admin_user_id: str
-
-@app.delete("/api/admin/reviews")
-async def admin_delete_review(payload: ReviewDeletePayload):
-    if not await verify_admin(payload.admin_user_id):
-        raise HTTPException(status_code=403, detail="관리자 권한이 없습니다.")
-
-    async with httpx.AsyncClient() as client:
-        res = await client.delete(
-            f"{SUPABASE_URL}/rest/v1/reviews",
-            headers=get_sb_headers(),
-            params={"id": f"eq.{payload.review_id}"},
-        )
-        if res.status_code not in [200, 204]:
-            raise HTTPException(status_code=res.status_code, detail=res.text)
-
-        return {"ok": True}
-
 
 # ──────────────────────────────────────────────────────
-# 문의하기
+# 문의하기 (Inquiries)
 # ──────────────────────────────────────────────────────
+# Supabase inquiries 테이블: id, user_id, subject, message, is_read, created_at
+
+ADMIN_USER_IDS = set(
+    filter(None, os.getenv("ADMIN_USER_IDS", "admin").split(","))
+)
+
+def require_admin(user_id: str):
+    if user_id not in ADMIN_USER_IDS:
+        raise HTTPException(status_code=403, detail="관리자만 접근할 수 있습니다.")
+
 
 class InquiryPayload(BaseModel):
-    user_id: str   # 비로그인 시 "익명" 등 전달
-    subject: str
+    user_id: str
+    subject: str = ""
     message: str
 
+@app.post("/api/inquiries")
 @app.post("/api/inquiry")
 async def post_inquiry(payload: InquiryPayload):
-    if not payload.message.strip():
+    text = payload.message.strip()
+    if not text:
         raise HTTPException(status_code=400, detail="문의 내용을 입력해주세요.")
 
-    # 1) Supabase에 저장
     async with httpx.AsyncClient() as client:
-        ins_res = await client.post(
+        res = await client.post(
             f"{SUPABASE_URL}/rest/v1/inquiries",
             headers={**get_sb_headers(), "Prefer": "return=representation"},
             json={
-                "user_id": payload.user_id or "익명",
-                "subject": payload.subject.strip() or "(제목 없음)",
-                "message": payload.message.strip(),
+                "user_id": payload.user_id.strip() or "익명",
+                "subject": payload.subject.strip(),
+                "message": text,
+                "is_read": False,
             },
         )
-        if ins_res.status_code not in [200, 201]:
-            raise HTTPException(status_code=ins_res.status_code, detail=ins_res.text)
+        if res.status_code not in [200, 201]:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+        return {"ok": True}
 
-    # 2) Gmail SMTP로 운영자에게 발송 (환경변수 미설정 시 스킵)
-    if GMAIL_USER and GMAIL_PASS and ADMIN_EMAIL:
-        try:
-            body = (
-                f"보낸 사람: {payload.user_id or '익명'}\n"
-                f"제목: {payload.subject or '(제목 없음)'}\n\n"
-                f"{payload.message}"
-            )
-            msg = MIMEText(body, "plain", "utf-8")
-            msg["Subject"] = f"[인마고 급식 문의] {payload.subject or '(제목 없음)'}"
-            msg["From"] = GMAIL_USER
-            msg["To"] = ADMIN_EMAIL
-
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-                smtp.login(GMAIL_USER, GMAIL_PASS)
-                smtp.sendmail(GMAIL_USER, ADMIN_EMAIL, msg.as_string())
-        except Exception as e:
-            # 이메일 실패는 저장은 됐으므로 경고만
-            print(f"[WARN] 이메일 발송 실패: {e}")
-
-    return {"ok": True, "message": "문의가 접수되었습니다."}
-
-
-# ── 관리자: 문의 목록 조회 ────────────────────────────
 
 @app.get("/api/admin/inquiries")
 async def get_inquiries(admin_user_id: str):
-    if not await verify_admin(admin_user_id):
-        raise HTTPException(status_code=403, detail="관리자 권한이 없습니다.")
-
+    require_admin(admin_user_id)
     async with httpx.AsyncClient() as client:
         res = await client.get(
             f"{SUPABASE_URL}/rest/v1/inquiries",
             headers=get_sb_headers(),
             params={
-                "select": "id,user_id,subject,message,created_at",
+                "select": "*",
                 "order": "created_at.desc",
-                "limit": 200,
             },
         )
         if res.status_code != 200:
             raise HTTPException(status_code=res.status_code, detail=res.text)
+        rows = res.json()
+        # admin_reply / replied_at 컬럼이 없을 경우 대비
+        for r in rows:
+            r.setdefault("admin_reply", None)
+            r.setdefault("replied_at", None)
+            r.setdefault("is_read", False)
+        return rows
 
-        return [
-            {
-                "id": r["id"],
-                "user_id": r["user_id"],
-                "subject": r["subject"],
-                "message": r["message"],
-                "created_at": r["created_at"],
-            }
-            for r in res.json()
-        ]
 
-@app.get("/api/schedule")
-async def get_schedule():
+@app.get("/api/inquiries/mine")
+async def get_my_inquiries(user_id: str):
+    if not user_id or user_id == "익명":
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
     async with httpx.AsyncClient() as client:
         res = await client.get(
-            f"{SUPABASE_URL}/rest/v1/school_schedule",
+            f"{SUPABASE_URL}/rest/v1/inquiries",
             headers=get_sb_headers(),
-            params={"select": "date,schedule", "limit": 1000}
+            params={
+                "select": "*",
+                "user_id": f"eq.{user_id}",
+                "order": "created_at.desc",
+            },
         )
-        
         if res.status_code != 200:
             raise HTTPException(status_code=res.status_code, detail=res.text)
+        rows = res.json()
+        for r in rows:
+            r.setdefault("admin_reply", None)
+            r.setdefault("replied_at", None)
+        return rows
 
-        result = {}
-        for row in res.json():
-            date = row["date"]
-            schedule_text = row["schedule"]
-            
-            result[date] = [0, schedule_text]
-            
-        return result
+
+class InquiryReplyPayload(BaseModel):
+    inquiry_id: int
+    reply: str
+    admin_user_id: str
+
+@app.patch("/api/admin/inquiries/reply")
+async def reply_to_inquiry(payload: InquiryReplyPayload):
+    require_admin(payload.admin_user_id)
+    if not payload.reply.strip():
+        raise HTTPException(status_code=400, detail="답변 내용을 입력해주세요.")
+    from datetime import datetime, timezone
+    async with httpx.AsyncClient() as client:
+        res = await client.patch(
+            f"{SUPABASE_URL}/rest/v1/inquiries",
+            headers={**get_sb_headers(), "Prefer": "return=minimal"},
+            params={"id": f"eq.{payload.inquiry_id}"},
+            json={
+                "admin_reply": payload.reply.strip(),
+                "replied_at": datetime.now(timezone.utc).isoformat(),
+                "is_read": True,
+            },
+        )
+        if res.status_code not in [200, 201, 204]:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+        return {"ok": True}
+
+
+class InquiryReadPayload(BaseModel):
+    admin_user_id: str
+    is_read: bool
+
+@app.patch("/api/inquiries/{inquiry_id}")
+async def patch_inquiry_read(inquiry_id: int, payload: InquiryReadPayload):
+    require_admin(payload.admin_user_id)
+    async with httpx.AsyncClient() as client:
+        res = await client.patch(
+            f"{SUPABASE_URL}/rest/v1/inquiries",
+            headers={**get_sb_headers(), "Prefer": "return=representation"},
+            params={"id": f"eq.{inquiry_id}"},
+            json={"is_read": payload.is_read},
+        )
+        if res.status_code not in [200, 201]:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+        return {"ok": True}
+
+
+@app.delete("/api/inquiries/{inquiry_id}")
+async def delete_inquiry(inquiry_id: int, admin_user_id: str):
+    require_admin(admin_user_id)
+    async with httpx.AsyncClient() as client:
+        res = await client.delete(
+            f"{SUPABASE_URL}/rest/v1/inquiries",
+            headers=get_sb_headers(),
+            params={"id": f"eq.{inquiry_id}"},
+        )
+        if res.status_code not in [200, 204]:
+            raise HTTPException(status_code=res.status_code, detail=res.text)
+        return {"ok": True}
+
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("index:app", host="0.0.0.0", port=8000, reload=True)
+
+
+# ──────────────────────────────────────────────────────
+# 학사일정 (NEIS SchoolSchedule API)
+# ──────────────────────────────────────────────────────
+
+NEIS_KEY         = os.getenv("NEIS_API_KEY", "").strip()
+OFFICE_CODE      = os.getenv("OFFICE_CODE", "E10").strip()   # 인천시교육청
+SCHOOL_CODE      = os.getenv("SCHOOL_CODE", "7310370").strip()  # 인천전자마이스터고
+NEIS_SCHEDULE_URL = "https://open.neis.go.kr/hub/SchoolSchedule"
+
+@app.get("/api/schedule")
+async def get_schedule(year: int):
+    """
+    GET /api/schedule?year=2026
+    NEIS SchoolSchedule API → Record<YYYYMMDD, [cate_code, event_name]>
+    """
+    if not NEIS_KEY:
+        raise HTTPException(status_code=503, detail="NEIS_API_KEY 환경변수가 설정되지 않았습니다.")
+
+    from_ymd = f"{year}0101"
+    to_ymd   = f"{year}1231"
+
+    all_rows: list = []
+    p_index = 1
+    p_size  = 200
+
+    async with httpx.AsyncClient() as client:
+        while True:
+            params = {
+                "KEY": NEIS_KEY,
+                "Type": "json",
+                "pIndex": str(p_index),
+                "pSize": str(p_size),
+                "ATPT_OFCDC_SC_CODE": OFFICE_CODE,
+                "SD_SCHUL_CODE": SCHOOL_CODE,
+                "AA_FROM_YMD": from_ymd,
+                "AA_TO_YMD": to_ymd,
+            }
+            res = await client.get(NEIS_SCHEDULE_URL, params=params, timeout=10.0)
+            if res.status_code != 200:
+                raise HTTPException(status_code=res.status_code, detail="NEIS API 오류")
+
+            data = res.json()
+            # 데이터 없음 (INFO-200 등)
+            if "SchoolSchedule" not in data:
+                break
+
+            rows = data["SchoolSchedule"][1].get("row", [])
+            all_rows.extend(rows)
+
+            if len(rows) < p_size:
+                break
+            p_index += 1
+
+    # { "YYYYMMDD": [cate_code, event_name] } 형식으로 변환
+    result: dict[str, list] = {}
+    for row in all_rows:
+        date_key = row.get("AA_YMD", "")
+        event_nm = row.get("EVENT_NM", "").strip()
+        cate_code = int(row.get("EVENT_CATE", 0) or 0)
+        if date_key and event_nm:
+            if date_key in result:
+                # 같은 날 일정이 여러 개면 줄바꿈으로 합침
+                result[date_key][1] = result[date_key][1] + " / " + event_nm
+            else:
+                result[date_key] = [cate_code, event_nm]
+
+    return result
