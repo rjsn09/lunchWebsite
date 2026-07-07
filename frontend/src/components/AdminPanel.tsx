@@ -295,6 +295,7 @@ export default function AdminPanel({ isOpen, onClose, adminUserId, onToast }: Pr
                     style={{
                       borderColor: "rgba(255,159,67,0.3)",
                       background: "rgba(255,255,255,0.04)",
+                      color: "var(--text-primary)",
                     }}
                   />
                   <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
