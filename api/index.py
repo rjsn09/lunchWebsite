@@ -252,7 +252,7 @@ async def post_login(payload: LoginPayload):
             f"{SUPABASE_URL}/rest/v1/users",
             headers=get_sb_headers(),
             params={
-                "select": "user_id,password",
+                "select": "user_id,password,is_admin",
                 "user_id": f"eq.{payload.user_id}",
                 "password": f"eq.{payload.password}",
             },
@@ -268,7 +268,12 @@ async def post_login(payload: LoginPayload):
         if existing["password"] != payload.password:
             raise HTTPException(status_code=401, detail="비밀번호가 틀렸습니다.")
 
-        return {"ok": True, "user_id": existing["user_id"]}
+        user_id = existing["user_id"]
+        return {
+            "ok": True,
+            "user_id": user_id,
+            "is_admin": bool(existing.get("is_admin", False)),
+        }
 
 
 # ──────────────────────────────────────────────────────
@@ -392,7 +397,7 @@ async def post_review(payload: ReviewPayload):
 # ──────────────────────────────────────────────────────
 # 문의하기 (Inquiries)
 # ──────────────────────────────────────────────────────
-# Supabase inquiries 테이블: id, user_id, subject, message, is_read, created_at
+# Supabase inquiries 테이블: id, user_id, subject, message, admin_reply, replied_at, created_at
 
 ADMIN_USER_IDS = set(
     filter(None, os.getenv("ADMIN_USER_IDS", "admin").split(","))
@@ -423,7 +428,6 @@ async def post_inquiry(payload: InquiryPayload):
                 "user_id": payload.user_id.strip() or "익명",
                 "subject": payload.subject.strip(),
                 "message": text,
-                "is_read": False,
             },
         )
         if res.status_code not in [200, 201]:
@@ -450,7 +454,6 @@ async def get_inquiries(admin_user_id: str):
         for r in rows:
             r.setdefault("admin_reply", None)
             r.setdefault("replied_at", None)
-            r.setdefault("is_read", False)
         return rows
 
 
@@ -496,7 +499,6 @@ async def reply_to_inquiry(payload: InquiryReplyPayload):
             json={
                 "admin_reply": payload.reply.strip(),
                 "replied_at": datetime.now(timezone.utc).isoformat(),
-                "is_read": True,
             },
         )
         if res.status_code not in [200, 201, 204]:
@@ -504,23 +506,6 @@ async def reply_to_inquiry(payload: InquiryReplyPayload):
         return {"ok": True}
 
 
-class InquiryReadPayload(BaseModel):
-    admin_user_id: str
-    is_read: bool
-
-@app.patch("/api/inquiries/{inquiry_id}")
-async def patch_inquiry_read(inquiry_id: int, payload: InquiryReadPayload):
-    require_admin(payload.admin_user_id)
-    async with httpx.AsyncClient() as client:
-        res = await client.patch(
-            f"{SUPABASE_URL}/rest/v1/inquiries",
-            headers={**get_sb_headers(), "Prefer": "return=representation"},
-            params={"id": f"eq.{inquiry_id}"},
-            json={"is_read": payload.is_read},
-        )
-        if res.status_code not in [200, 201]:
-            raise HTTPException(status_code=res.status_code, detail=res.text)
-        return {"ok": True}
 
 
 @app.delete("/api/inquiries/{inquiry_id}")
